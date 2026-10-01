@@ -3,12 +3,15 @@ from array import array
 
 
 class MotorData:
-    """Shared request, status, and sample data for one motor."""
+    """Shared request, status, and command data for one motor."""
 
     def __init__(self):
         self.request = False
         self.busy = False
         self.ready = False
+
+        # Requested manual duty cycle.
+        self.cycle = 0
 
         # Storage for one 100-sample trial.
         self.time_us = array('L', (0 for _ in range(100)))
@@ -19,11 +22,9 @@ class MotorData:
         self.effort = 0
 
     def clear(self):
-        """Reset the number of valid samples."""
         self.count = 0
 
     def add(self, time_us, position, velocity):
-        """Store one sample."""
         index = self.count
 
         self.time_us[index] = time_us
@@ -34,7 +35,6 @@ class MotorData:
 
 
 class TaskMotor:
-    """Run five nonblocking step-response trials on one motor."""
 
     S_INIT = 0
     S_WAIT = 1
@@ -50,7 +50,7 @@ class TaskMotor:
         self.shared = shared
 
         # Step-response commands, in percent.
-        self.efforts = [20, 40, 60, 80, 100]
+        self.efforts = []
 
         # Sample every 10 ms for 100 samples = approximately 1 second.
         self.sample_interval_us = 10_000
@@ -96,7 +96,7 @@ class TaskMotor:
                     self.shared.clear()
 
                     # Reset the trial sequence.
-                    self.efforts = [20, 40, 60, 80, 100]
+                    self.efforts = [self.shared.cycle]
 
                     self.state = self.S_START_TRIAL
 

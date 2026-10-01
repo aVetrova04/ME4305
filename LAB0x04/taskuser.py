@@ -1,3 +1,5 @@
+from MultiChar import MultiChar
+
 class TaskUser:
     """poll usb input and print test data without blocking motor tasks."""
 
@@ -6,18 +8,23 @@ class TaskUser:
     S_WAIT_RESULT = 2
     S_PRINT = 3
     S_EXIT = 4
+    S_DUTY_SELECT = 5
+    S_DUTY_CYCLE = 6
 
     def __init__(self, vcp, left_data, right_data, system):
         self.vcp = vcp
         self.left_data = left_data
         self.right_data = right_data
         self.system = system
+        self.multi_char = MultiChar(vcp)
 
         self.state = self.S_INIT
         self.active_data = None
         self.active_name = None
         self.print_index = 0
         self.output_started = False
+
+        self.duty_cycle = 0
 
     def write_line(self, text):
         self.vcp.write((text + "\r\n").encode())
@@ -37,6 +44,9 @@ class TaskUser:
             "| h/H | Print help menu                                        |"
         )
         self.write_line(
+            "| d/D | Enter duty cycle (-100 to 100):                        |"
+        )
+        self.write_line(
             "| l/L | Run step-response sequence on left motor               |"
         )
         self.write_line(
@@ -54,7 +64,7 @@ class TaskUser:
         while True:
             if self.state == self.S_INIT:
                 self.print_help()
-                self.write_line("Enter command (h, l, r, or e):")
+                self.write_line("Enter command (h, l, r, d, or e):")
                 self.state = self.S_WAIT
 
             elif self.state == self.S_WAIT:
@@ -72,7 +82,7 @@ class TaskUser:
                             yield self.state
                             continue
 
-                        self.write_line("> " + command)
+                        self.write_line(">>> " + command)
 
                         if command in ("h", "H"):
                             self.print_help()
@@ -83,6 +93,9 @@ class TaskUser:
                                     not self.left_data.ready and
                                     not self.right_data.busy and
                                     not self.right_data.ready):
+
+                                self.left_data.cycle = self.duty_cycle
+
                                 self.active_data = self.left_data
                                 self.active_name = "LEFT"
                                 self.output_started = False
@@ -90,6 +103,7 @@ class TaskUser:
                                 self.write_line(
                                     "Starting LEFT motor step-response."
                                 )
+
                                 self.state = self.S_WAIT_RESULT
                             else:
                                 self.write_line(
@@ -102,6 +116,9 @@ class TaskUser:
                                     not self.left_data.ready and
                                     not self.right_data.busy and
                                     not self.right_data.ready):
+
+                                self.right_data.cycle = self.duty_cycle
+
                                 self.active_data = self.right_data
                                 self.active_name = "RIGHT"
                                 self.output_started = False
@@ -116,6 +133,13 @@ class TaskUser:
                                     "test/output to finish."
                                 )
 
+                        elif command in ("d", "D"):
+                            self.multi_char.reset()
+
+                            self.write_line("Enter duty cycle (-100 to 100):")
+                            self.state = self.S_DUTY_CYCLE
+
+
                         elif command in ("e", "E"):
                             self.write_line("Exit requested.")
                             self.system.exit_requested = True
@@ -125,6 +149,25 @@ class TaskUser:
                             self.write_line(
                                 "Invalid command. Enter h, l, r, or e."
                             )
+
+
+
+            elif self.state == self.S_DUTY_CYCLE:
+
+                if self.multi_char.update():
+                    if self.multi_char.was_changed():
+                        self.duty_cycle = self.multi_char.get_value()
+
+                        # Clamp to valid motor command range.
+                        if self.duty_cycle > 100:
+                            self.duty_cycle = 100
+                        elif self.duty_cycle < -100:
+                            self.duty_cycle = -100
+
+                        self.write_line("Duty cycle set to {}%".format(self.duty_cycle))
+
+                    self.write_line("Enter command (h, l, r, d, or e):")
+                    self.state = self.S_WAIT
 
             elif self.state == self.S_WAIT_RESULT:
                 if self.active_data.ready:
