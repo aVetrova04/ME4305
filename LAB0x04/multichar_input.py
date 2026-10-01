@@ -87,7 +87,7 @@ while not done:
             # However, if the buffer only contains a single dash or a
             # single period, the termination key is ignored because
             # no digits were entered.
-            elif char_buf != ["-"] or char_buf != ["."]:
+            elif char_buf != ["-"] and char_buf != ["."]:
                 ser.write("\r\n")
                 value = int("".join(char_buf))
                 ser.write(f"Value set to {value}\r\n")
