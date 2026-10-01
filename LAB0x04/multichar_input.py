@@ -46,6 +46,12 @@ while not done:
             ser.write(char_in)
             char_buf.append(char_in)
 
+        # Periods are used to indicate a floating point and are valid
+        # in any position of the char_buf
+        elif char_in == ".":
+            ser.write(char_in)
+            char_buf.append(char_in)
+
         # Dashes are used for negative values but are only valid if
         # they're the first character in the buffer. Valid dashes
         # are echoed.
@@ -78,9 +84,10 @@ while not done:
 
             # If the character buffer is not empty the termination
             # character is interpreted as an end to the user input.
-            # However, if the buffer only contains a single dash, the
-            # termination key is ignored because no digits were entered.
-            elif char_buf != ["-"]:
+            # However, if the buffer only contains a single dash or a
+            # single period, the termination key is ignored because
+            # no digits were entered.
+            elif char_buf != ["-"] or char_buf != ["."]:
                 ser.write("\r\n")
                 value = int("".join(char_buf))
                 ser.write(f"Value set to {value}\r\n")
