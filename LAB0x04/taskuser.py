@@ -156,17 +156,29 @@ class TaskUser:
 
                 if self.multi_char.update():
                     if self.multi_char.was_changed():
-                        self.duty_cycle = self.multi_char.get_value()
+                        new_duty = self.multi_char.get_value()
 
-                        # Clamp to valid motor command range.
-                        if self.duty_cycle > 100:
-                            self.duty_cycle = 100
-                        elif self.duty_cycle < -100:
-                            self.duty_cycle = -100
+                        if -100 <= new_duty <= 100:
+                            self.duty_cycle = new_duty
+                            self.write_line(
+                                "Duty cycle set to {}%".format(
+                                    self.duty_cycle
+                                )
+                            )
+                        else:
+                            self.write_line(
+                                "Invalid duty cycle. Enter a value "
+                                "from -100 to 100."
+                            )
+                            self.write_line(
+                                "Duty cycle remains at {}%".format(
+                                    self.duty_cycle
+                                )
+                            )
 
-                        self.write_line("Duty cycle set to {}%".format(self.duty_cycle))
-
-                    self.write_line("Enter command (h, l, r, d, or e):")
+                    self.write_line(
+                        "Enter command (h, l, r, d, or e):"
+                    )
                     self.state = self.S_WAIT
 
             elif self.state == self.S_WAIT_RESULT:

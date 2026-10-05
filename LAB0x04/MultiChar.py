@@ -3,7 +3,7 @@ class MultiChar:
     def __init__(self, vcp):
         self.vcp = vcp
 
-        self.value = 0
+        self.value = 0.0
         self.char_buf = []
 
         self.digits = set("0123456789")
@@ -13,18 +13,13 @@ class MultiChar:
         self.changed = False
 
     def reset(self):
-        """Reset the input processor for a new value."""
+        """reset the input processor for a new value."""
         self.char_buf = []
         self.done = False
         self.changed = False
 
     def update(self):
-        """
-        Process at most one available character.
-
-        Returns True when the user has finished entering a value.
-        The completed value is available in self.value.
-        """
+        """process at most one available character."""
 
         if self.done:
             return True
@@ -42,59 +37,66 @@ class MultiChar:
         except AttributeError:
             char_in = chr(char_in[0])
 
+        # accept digits
         if char_in in self.digits:
             self.vcp.write(char_in.encode())
             self.char_buf.append(char_in)
 
+        # accept a minus sign only as the first character
         elif char_in == "-" and len(self.char_buf) == 0:
             self.vcp.write(char_in.encode())
             self.char_buf.append(char_in)
 
-        elif char_in == "\x7f":
+        # accept no more than one decimal point
+        elif char_in == "." and "." not in self.char_buf:
+            self.vcp.write(char_in.encode())
+            self.char_buf.append(char_in)
+
+        # support delete and backspace
+        elif char_in in ("\x7f", "\x08"):
             if len(self.char_buf) > 0:
-                self.vcp.write(char_in.encode())
                 self.char_buf.pop()
+                self.vcp.write(b"\b \b")
 
+        # finish entry when enter is pressed
         elif char_in in self.terminators:
+            self.vcp.write(b"\r\n")
 
-            # Empty input: leave value unchanged.
-            if len(self.char_buf) == 0:
-                self.vcp.write(b"\r\n")
-                self.vcp.write(b"Value not changed\r\n")
-
+            # these entries are incomplete
+            if (
+                len(self.char_buf) == 0
+                or self.char_buf == ["-"]
+                or self.char_buf == ["."]
+                or self.char_buf == ["-", "."]
+            ):
+                self.vcp.write(b"Invalid or incomplete value\r\n")
                 self.done = True
                 self.changed = False
 
-            # A lone '-' is not a valid integer.
-            elif self.char_buf == ["-"]:
-                pass
-
-            # Valid integer.
             else:
-                self.vcp.write(b"\r\n")
-
-                self.value = int("".join(self.char_buf))
+                self.value = float("".join(self.char_buf))
 
                 self.vcp.write(
-                    ("Value set to {}\r\n".format(self.value)).encode()
+                    ("Value entered: {}\r\n".format(self.value)).encode()
                 )
 
                 self.done = True
                 self.changed = True
 
+        # ignore unsupported characters
         else:
             pass
 
         return self.done
 
     def get_value(self):
-        """Return the most recently completed integer value."""
+        """return the most recently completed numeric value."""
         return self.value
 
     def is_done(self):
-        """Return True when input has been terminated."""
+        """return true when input has been terminated."""
         return self.done
 
     def was_changed(self):
-        """Return True if the user entered a new value."""
+        """return true if a complete numeric value was entered."""
         return self.changed

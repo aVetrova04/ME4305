@@ -1,24 +1,24 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Page-1" id="1e9MIi-PZA3Atpq0Z11Z">
-    <mxGraphModel dx="1022" dy="626" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="766" dy="934" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-9" edge="1" parent="1" source="Y_uC5c_1lgtRb6HpRDdh-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="Y_uC5c_1lgtRb6HpRDdh-3">
-          <mxGeometry relative="1" as="geometry">
+        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-9" edge="1" parent="1" source="Y_uC5c_1lgtRb6HpRDdh-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="Y_uC5c_1lgtRb6HpRDdh-3">
+          <mxGeometry relative="1" x="-0.3023" as="geometry">
             <Array as="points">
-              <mxPoint x="320" y="245" />
-              <mxPoint x="320" y="245" />
+              <mxPoint x="485" y="167" />
             </Array>
+            <mxPoint x="450" y="167.00000000000023" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="lMB0rNUFfp-zKN7MQRCB-3" connectable="0" parent="Y_uC5c_1lgtRb6HpRDdh-9" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="count (int)&lt;div&gt;time_us (array(int[100]))&lt;/div&gt;&lt;div&gt;position (array(int[100]))&amp;nbsp;&lt;/div&gt;&lt;div&gt;velocity (array(int[100]))&lt;/div&gt;" vertex="1">
-          <mxGeometry relative="1" x="0.0513" y="-3" as="geometry">
-            <mxPoint as="offset" />
+        <mxCell id="lMB0rNUFfp-zKN7MQRCB-3" connectable="0" parent="Y_uC5c_1lgtRb6HpRDdh-9" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="busy: bool&lt;br&gt;ready: bool&lt;br&gt;effort: float&lt;br&gt;count: int&lt;br&gt;time_us: array(&#39;L&#39;, 100)&lt;br&gt;position: array(&#39;l&#39;, 100)&lt;br&gt;velocity: array(&#39;f&#39;, 100)" vertex="1">
+          <mxGeometry relative="1" x="-0.2636" y="-3" as="geometry">
+            <mxPoint y="30" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="LEFT MOTOR TASK&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Period: 10ms&lt;/div&gt;&lt;div&gt;Priority: 2&lt;/div&gt;" vertex="1">
-          <mxGeometry height="140" width="140" x="130" y="138" as="geometry" />
+        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="LEFT MOTOR TASK&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Period: 10ms&lt;/div&gt;&lt;div&gt;Priority: 2&lt;/div&gt;&lt;div&gt;owns left motor and encoder&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="140" x="130" y="120" as="geometry" />
         </mxCell>
         <mxCell id="Y_uC5c_1lgtRb6HpRDdh-11" edge="1" parent="1" source="Y_uC5c_1lgtRb6HpRDdh-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" target="Y_uC5c_1lgtRb6HpRDdh-3">
           <mxGeometry relative="1" as="geometry">
@@ -28,27 +28,41 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="lMB0rNUFfp-zKN7MQRCB-4" connectable="0" parent="Y_uC5c_1lgtRb6HpRDdh-11" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="count (int)&lt;div&gt;time_us (array(int[100]))&lt;/div&gt;&lt;div&gt;position (array(int[100]))&amp;nbsp;&lt;/div&gt;&lt;div&gt;velocity (array(int[100]))&lt;/div&gt;" vertex="1">
+        <mxCell id="lMB0rNUFfp-zKN7MQRCB-4" connectable="0" parent="Y_uC5c_1lgtRb6HpRDdh-11" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="busy: bool&lt;br&gt;ready: bool&lt;br&gt;effort: float&lt;br&gt;count: int&lt;br&gt;time_us: array(&#39;L&#39;, 100)&lt;br&gt;position: array(&#39;l&#39;, 100)&lt;br&gt;velocity: array(&#39;f&#39;, 100)" vertex="1">
           <mxGeometry relative="1" x="0.0256" as="geometry">
-            <mxPoint as="offset" />
+            <mxPoint x="-2" y="15" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-2" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="RIGHT MOTOR TASK&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Period: 10ms&lt;/div&gt;&lt;div&gt;Priority: 2&lt;/div&gt;" vertex="1">
+        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-2" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="RIGHT MOTOR TASK&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Period: 10ms&lt;/div&gt;&lt;div&gt;Priority: 2&lt;/div&gt;&lt;div&gt;owns right motor and encoder&lt;/div&gt;" vertex="1">
           <mxGeometry height="140" width="140" x="130" y="295" as="geometry" />
         </mxCell>
-        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-3" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="USER TASK&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Period: 0ms&lt;/div&gt;&lt;div&gt;Priority: 1&lt;/div&gt;" vertex="1">
-          <mxGeometry height="140" width="140" x="450" y="210" as="geometry" />
-        </mxCell>
-        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-7" edge="1" parent="1" source="Y_uC5c_1lgtRb6HpRDdh-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.011;entryY=0.154;entryDx=0;entryDy=0;entryPerimeter=0;" target="Y_uC5c_1lgtRb6HpRDdh-1">
+        <mxCell id="MTu6rT0mNhTVug8-YySv-4" edge="1" parent="1" source="Y_uC5c_1lgtRb6HpRDdh-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="MTu6rT0mNhTVug8-YySv-1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="520" y="159.6" />
+              <mxPoint x="730" y="280" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="lMB0rNUFfp-zKN7MQRCB-1" connectable="0" parent="Y_uC5c_1lgtRb6HpRDdh-7" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="ready&lt;div&gt;share &amp;lt;bool&amp;gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;dcl &amp;lt;signed float&amp;gt;&lt;/div&gt;" vertex="1">
-          <mxGeometry relative="1" x="0.13" as="geometry">
-            <mxPoint as="offset" />
+        <mxCell id="MTu6rT0mNhTVug8-YySv-5" connectable="0" parent="MTu6rT0mNhTVug8-YySv-4" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="exit_requested: bool" vertex="1">
+          <mxGeometry relative="1" x="0.026" as="geometry">
+            <mxPoint x="-12" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-3" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="USER TASK&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Period: 20ms&lt;/div&gt;&lt;div&gt;Priority: 1&lt;/div&gt;&lt;div&gt;Owns USB VCP&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="140" x="450" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-7" edge="1" parent="1" source="Y_uC5c_1lgtRb6HpRDdh-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1.015;entryY=0.147;entryDx=0;entryDy=0;entryPerimeter=0;" target="Y_uC5c_1lgtRb6HpRDdh-1">
+          <mxGeometry relative="1" x="0.2966" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="140.6" />
+            </Array>
+            <mxPoint x="520" y="132" as="sourcePoint" />
+            <mxPoint x="300" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lMB0rNUFfp-zKN7MQRCB-1" connectable="0" parent="Y_uC5c_1lgtRb6HpRDdh-7" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="request: bool&lt;br&gt;cycle: float" vertex="1">
+          <mxGeometry relative="1" x="0.4207" as="geometry">
+            <mxPoint x="23" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="Y_uC5c_1lgtRb6HpRDdh-8" edge="1" parent="1" source="Y_uC5c_1lgtRb6HpRDdh-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.011;entryY=0.86;entryDx=0;entryDy=0;entryPerimeter=0;" target="Y_uC5c_1lgtRb6HpRDdh-2">
@@ -58,10 +72,13 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="lMB0rNUFfp-zKN7MQRCB-2" connectable="0" parent="Y_uC5c_1lgtRb6HpRDdh-8" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="ready&lt;div&gt;share &amp;lt;bool&amp;gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;dcr &amp;lt;signed float&amp;gt;&lt;/div&gt;" vertex="1">
+        <mxCell id="lMB0rNUFfp-zKN7MQRCB-2" connectable="0" parent="Y_uC5c_1lgtRb6HpRDdh-8" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="request: bool&lt;br&gt;cycle: float" vertex="1">
           <mxGeometry relative="1" x="0.1814" y="2" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="MTu6rT0mNhTVug8-YySv-1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="&lt;div&gt;MAIN / SYSTEM DATA&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;(EXIT)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="670" y="320" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

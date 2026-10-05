@@ -40,4 +40,4 @@ class MotorDriver:
         else:
             self._dir_pin.low()
 
-        self._pwm_chan.pulse_width_percent(int(abs(effort)))
+        self._pwm_chan.pulse_width_percent(abs(effort))
