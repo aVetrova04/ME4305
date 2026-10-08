@@ -86,7 +86,7 @@ class TaskUser:
 
                         if command in ("h", "H"):
                             self.print_help()
-                            self.write_line("Enter command (h, l, r, or e):")
+                            self.write_line("Enter command (h, l, r, d, or e):")
 
                         elif command in ("l", "L"):
                             if (not self.left_data.busy and
@@ -147,7 +147,7 @@ class TaskUser:
 
                         else:
                             self.write_line(
-                                "Invalid command. Enter h, l, r, or e."
+                                "Invalid command. Enter h, l, r, d, or e."
                             )
 
 
@@ -188,7 +188,7 @@ class TaskUser:
                     self.write_line(
                         "# {} MOTOR TEST COMPLETE".format(self.active_name)
                     )
-                    self.write_line("Enter command (h, l, r, or e):")
+                    self.write_line("Enter command (h, l, r, d, or e):")
                     self.active_data = None
                     self.state = self.S_WAIT
 
