@@ -4,6 +4,7 @@ from MotorDriver import MotorDriver
 from EncoderDriver import EncoderDriver
 from taskmotor import MotorData, TaskMotor
 from taskuser import TaskUser
+from ClosedLoop import ClosedLoop
 import cotask
 
 
@@ -46,6 +47,8 @@ def main():
         right_task.taskmotor_gen_fcn(), name="Right_Motor",
         priority=2, period=10, profile=True
     ))
+
+    # lowest priority of ui
     cotask.task_list.append(cotask.Task(
         user_task.taskuser_gen_fcn(), name="User",
         priority=1, period=20, profile=True
