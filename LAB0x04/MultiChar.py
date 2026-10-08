@@ -73,7 +73,7 @@ class MultiChar:
             else:
                 self.vcp.write(b"\r\n")
 
-                self.value = int("".join(self.char_buf))
+                self.value = float("".join(self.char_buf))
 
                 self.vcp.write(
                     ("Value set to {}\r\n".format(self.value)).encode()
