@@ -8,10 +8,11 @@ class TaskUser:
     S_WAIT_RESULT = 2
     S_PRINT = 3
     S_EXIT = 4
-    S_DUTY_SELECT = 5
-    S_DUTY_CYCLE = 6
+    S_GAIN = 5
+    S_VEL = 6
 
     def __init__(self, vcp, left_data, right_data, system):
+        self.message = "Enter command (h, v, k, l, r, or e):"
         self.vcp = vcp
         self.left_data = left_data
         self.right_data = right_data
@@ -24,7 +25,9 @@ class TaskUser:
         self.print_index = 0
         self.output_started = False
 
-        self.duty_cycle = 0
+        self.vel = 0
+        self.p_gain = 0
+        self.i_gain = 0
 
     def write_line(self, text):
         self.vcp.write((text + "\r\n").encode())
@@ -44,7 +47,10 @@ class TaskUser:
             "| h/H | Print help menu                                        |"
         )
         self.write_line(
-            "| d/D | Enter duty cycle (-100 to 100):                        |"
+            "| v/V | Enter a velocity (rad/s):                              |"
+        )
+        self.write_line(
+            "| k/K | Gain menu:                                             |"
         )
         self.write_line(
             "| l/L | Run step-response sequence on left motor               |"
@@ -64,7 +70,7 @@ class TaskUser:
         while True:
             if self.state == self.S_INIT:
                 self.print_help()
-                self.write_line("Enter command (h, l, r, d, or e):")
+                self.write_line(self.message)
                 self.state = self.S_WAIT
 
             elif self.state == self.S_WAIT:
@@ -86,7 +92,7 @@ class TaskUser:
 
                         if command in ("h", "H"):
                             self.print_help()
-                            self.write_line("Enter command (h, l, r, d, or e):")
+                            self.write_line(self.message)
 
                         elif command in ("l", "L"):
                             if (not self.left_data.busy and
@@ -94,7 +100,7 @@ class TaskUser:
                                     not self.right_data.busy and
                                     not self.right_data.ready):
 
-                                self.left_data.cycle = self.duty_cycle
+                                self.left_data.cycle = self.vel
 
                                 self.active_data = self.left_data
                                 self.active_name = "LEFT"
@@ -117,7 +123,7 @@ class TaskUser:
                                     not self.right_data.busy and
                                     not self.right_data.ready):
 
-                                self.right_data.cycle = self.duty_cycle
+                                self.right_data.cycle = self.vel
 
                                 self.active_data = self.right_data
                                 self.active_name = "RIGHT"
@@ -133,12 +139,17 @@ class TaskUser:
                                     "test/output to finish."
                                 )
 
-                        elif command in ("d", "D"):
+                        elif command in ("v", "V"):
                             self.multi_char.reset()
 
-                            self.write_line("Enter duty cycle (-100 to 100):")
-                            self.state = self.S_DUTY_CYCLE
+                            self.write_line("Enter a velocity (rad/s):")
+                            self.state = self.S_VEL
 
+                        elif command in ("k", "K"):
+                            self.write_line("Enter p/P for proportional and i/I for integral:")
+
+                            self.multi_char.reset()
+                            self.state = self.S_GAIN
 
                         elif command in ("e", "E"):
                             self.write_line("Exit requested.")
@@ -150,23 +161,29 @@ class TaskUser:
                                 "Invalid command. Enter h, l, r, d, or e."
                             )
 
+            elif self.state == self.S_GAIN:
+                if command in ("p", "P"):
+                    self.write_line("Enter proportional gain:")
+                    if self.multi_char.update():
+                        if self.multi_char.was_changed():
+                            self.p_gain = self.multi_char.get_value()
 
+                elif command in ("i", "I"):
+                    self.write_line("Enter integral gain:")
+                    if self.multi_char.update():
+                        if self.multi_char.was_changed():
+                            self.i_gain = self.multi_char.get_value()
 
-            elif self.state == self.S_DUTY_CYCLE:
+                self.state = self.S_WAIT
+
+            # TODO: finish velocity state/communicaiton
+            elif self.state == self.S_VEL:
 
                 if self.multi_char.update():
                     if self.multi_char.was_changed():
-                        self.duty_cycle = self.multi_char.get_value()
+                        self.vel = self.multi_char.get_value()
 
-                        # Clamp to valid motor command range.
-                        if self.duty_cycle > 100:
-                            self.duty_cycle = 100
-                        elif self.duty_cycle < -100:
-                            self.duty_cycle = -100
-
-                        self.write_line("Duty cycle set to {}%".format(self.duty_cycle))
-
-                    self.write_line("Enter command (h, l, r, d, or e):")
+                    self.write_line(self.message)
                     self.state = self.S_WAIT
 
             elif self.state == self.S_WAIT_RESULT:
@@ -188,7 +205,7 @@ class TaskUser:
                     self.write_line(
                         "# {} MOTOR TEST COMPLETE".format(self.active_name)
                     )
-                    self.write_line("Enter command (h, l, r, d, or e):")
+                    self.write_line(self.message)
                     self.active_data = None
                     self.state = self.S_WAIT
 
