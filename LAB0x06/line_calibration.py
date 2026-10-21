@@ -10,16 +10,30 @@
 import json
 
 
+# modified to use the 8 connected pins
 def validate_calibration(calibration, channels, min_span, adc_max=4095):
-    white, black = calibration["white"], calibration["black"]
-    if len(channels) != 13 or list(calibration["channels"]) != list(channels):
-        raise ValueError("Calibration must match all 13 configured channels")
-    if len(white) != 13 or len(black) != 13 or not 0 < min_span <= adc_max:
-        raise ValueError("Invalid calibration lengths or minimum span")
+    white = calibration["white"]
+    black = calibration["black"]
+
+    n = len(channels)
+
+    if n != 8 or list(calibration["channels"]) != list(channels):
+        raise ValueError("Calibration must match all 8 configured channels")
+
+    if len(white) != n or len(black) != n:
+        raise ValueError("Calibration arrays must each contain 8 values")
+
+    if not 0 < min_span <= adc_max:
+        raise ValueError("Invalid minimum calibration span")
+
     for w, b in zip(white, black):
-        if not 0 <= w < b <= adc_max or b - w < min_span:
-            raise ValueError("Invalid black/white values or insufficient contrast")
+        if not (0 <= w < b <= adc_max):
+            raise ValueError("Invalid black/white ADC values")
+        if b - w < min_span:
+            raise ValueError("Insufficient black/white contrast")
+
     return calibration
+
 
 
 def save_calibration(filename, calibration, channels, min_span, adc_max=4095):
