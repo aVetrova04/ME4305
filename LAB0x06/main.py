@@ -1,4 +1,4 @@
-from pyb import Pin, Timer, USB_VCP
+from pyb import Pin, Timer, USB_VCP, ADC
 
 from MotorDriver import MotorDriver
 from EncoderDriver import EncoderDriver
@@ -7,6 +7,9 @@ from taskuser import TaskUser
 from ClosedLoop import ClosedLoop
 import cotask
 
+from line_sensor import LineSensor, CHANNELS
+from line_calibration import save_calibration, load_calibration
+from taskline import TaskLine
 
 class SystemData:
     def __init__(self):
@@ -38,20 +41,44 @@ def main():
     right_task = TaskMotor(right_motor, right_enc, right_data)
     user_task = TaskUser(USB_VCP(), left_data, right_data, system)
 
+    # TODO: Replace with the eight verified ADC-capable pins.
+    SENSOR_PINS = [
+        Pin.cpu.X, Pin.cpu.X, Pin.cpu.X, Pin.cpu.X,
+        Pin.cpu.X, Pin.cpu.X, Pin.cpu.X, Pin.cpu.X,
+    ]
+
+    MIN_CALIBRATION_SPAN = 10
+
+    sensor = LineSensor(
+        SENSOR_PINS,
+        calibration["black"],
+        calibration["white"],
+        min_span=MIN_CALIBRATION_SPAN,
+        samples=2,
+    )
+
+    line_task = TaskLine(sensor, left_data, right_data, config={})
+
     # motor tasks run every 10 ms; the ui runs every 20 ms
     cotask.task_list.append(cotask.Task(
         left_task.taskmotor_gen_fcn(), name="Left_Motor",
-        priority=2, period=10, profile=True
+        priority=5, period=10, profile=True
     ))
     cotask.task_list.append(cotask.Task(
         right_task.taskmotor_gen_fcn(), name="Right_Motor",
-        priority=2, period=10, profile=True
+        priority=5, period=10, profile=True
     ))
 
     # lowest priority of ui
     cotask.task_list.append(cotask.Task(
         user_task.taskuser_gen_fcn(), name="User",
         priority=1, period=20, profile=True
+    ))
+
+    # mid-priority data collection
+    cotask.task_list.append(cotask.Task(
+        line_task.taskline_gen_fcn(), name="Line",
+        priority=2, period=20, profile=True,
     ))
 
     try:

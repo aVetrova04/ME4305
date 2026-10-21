@@ -4,7 +4,7 @@ import math
 from ClosedLoop import ClosedLoop
 
 TICKS_PER_WHEEL_REVOLUTION = 1440
-TICKS_PER_RADIAN = TICKS_PER_WHEEL_REVOLUTION / (2 * math.pi)
+NOMINAL_BATTERY_VOLTAGE = 7.2
 
 class MotorData:
     """Shared request, status, and command data for one motor."""
@@ -14,13 +14,21 @@ class MotorData:
         self.busy = False
         self.ready = False
 
-        # Requested manual duty cycle.
+        # Manual PWM command, in percent.
         self.cycle = 0
+
+        # Shared closed-loop settings.
+        self.kp = 0.0
+        self.v_min = -3.0
+        self.v_max = 3.0
 
         # Storage for one 100-sample trial.
         self.time_us = array('L', (0 for _ in range(100)))
         self.position = array('l', (0 for _ in range(100)))
         self.velocity = array('f', (0 for _ in range(100)))
+
+        # Requested wheel velocity, in rad/s.
+        self.velocity_setpoint = 0.0
 
         self.count = 0
         self.effort = 0

@@ -13,8 +13,8 @@ class TaskUser:
     S_VEL = 6
     S_KP_VALUE = 7
 
-    def __init__(self, vcp, left_data, right_data, system):
-        self.message = "Enter command (h, v, k, l, r, or e):"
+    def __init__(self, vcp, left_data, right_data, system, line_task):
+        self.message = "Enter command (h, f, v, k, l, r, or e):"
         self.vcp = vcp
         self.left_data = left_data
         self.right_data = right_data
@@ -30,6 +30,10 @@ class TaskUser:
         self.vel = 0.0
         self.p_gain = 0.0
         self.i_gain = 0.0
+
+        self.line_task = line_task
+        self.kp_line = 0.0
+        self.max_correction = 1.0
 
         # Shared controller settings; voltage limits remain fixed.
         for data in (self.left_data, self.right_data):
@@ -55,6 +59,15 @@ class TaskUser:
         )
         self.write_line(
             "| h/H | Print help menu                                        |"
+        )
+        self.write_line(
+            "+-----+--------------------------------------------------------+"
+        )
+        self.write_line(
+            "| f/F | Commence line follow                                   |"
+        )
+        self.write_line(
+            "+-----+--------------------------------------------------------+"
         )
         self.write_line(
             "| v/V | Enter a velocity (rad/s)                               |"
@@ -166,6 +179,21 @@ class TaskUser:
                             self.write_line("Exit requested.")
                             self.system.exit_requested = True
                             self.state = self.S_EXIT
+
+                        elif command in ("f", "F"):
+                            if not self.left_data.busy and not self.right_data.busy:
+                                self.line_task.start(
+                                    base_speed=self.vel,
+                                    kp_line=self.kp_line,
+                                    max_correction=self.max_correction,
+                                )
+                                self.write_line("Line following requested.")
+
+                        elif command in ("s", "S"):
+                            self.line_task.stop()
+                            self.left_data.velocity_setpoint = 0.0
+                            self.right_data.velocity_setpoint = 0.0
+                            self.write_line("Stop requested.")
 
                         else:
                             self.write_line(
