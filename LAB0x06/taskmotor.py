@@ -1,6 +1,10 @@
 from time import ticks_us, ticks_diff, ticks_add
 from array import array
+import math
+from ClosedLoop import ClosedLoop
 
+TICKS_PER_WHEEL_REVOLUTION = 1440
+TICKS_PER_RADIAN = TICKS_PER_WHEEL_REVOLUTION / (2 * math.pi)
 
 class MotorData:
     """Shared request, status, and command data for one motor."""
@@ -44,10 +48,13 @@ class TaskMotor:
     S_PAUSE = 5
     S_FINISH = 6
 
-    def __init__(self, motor, encoder, shared):
+    def __init__(self, motor, encoder, shared, controller):
         self.motor = motor
         self.encoder = encoder
         self.shared = shared
+        self.controller = ClosedLoop()
+        self.controller.set_kp(self.shared.kp)
+        self.controller.set_lim(self.shared.v_min, self.shared.v_max)
 
         # Step-response commands, in percent.
         self.efforts = []
@@ -134,6 +141,11 @@ class TaskMotor:
                 now_us = ticks_us()
 
                 if ticks_diff(now_us, self.next_sample_us) >= 0:
+                    self.controller.set_kp(self.shared.kp)
+                    # self.controller.set_lim()
+
+                    velocity_rad_s = self.encoder.get_velocity() / TICKS_PER_RADIAN
+                    self.controller.update(velocity_rad_s)
 
                     self.encoder.update()
 

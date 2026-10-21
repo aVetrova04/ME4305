@@ -1,7 +1,8 @@
 from MultiChar import MultiChar
 
+
 class TaskUser:
-    """poll usb input and print test data without blocking motor tasks."""
+    """Poll USB input and print test data without blocking motor tasks."""
 
     S_INIT = 0
     S_WAIT = 1
@@ -10,6 +11,7 @@ class TaskUser:
     S_EXIT = 4
     S_GAIN = 5
     S_VEL = 6
+    S_KP_VALUE = 7
 
     def __init__(self, vcp, left_data, right_data, system):
         self.message = "Enter command (h, v, k, l, r, or e):"
@@ -25,9 +27,17 @@ class TaskUser:
         self.print_index = 0
         self.output_started = False
 
-        self.vel = 0
-        self.p_gain = 0
-        self.i_gain = 0
+        self.vel = 0.0
+        self.p_gain = 0.0
+        self.i_gain = 0.0
+
+        # Shared controller settings; voltage limits remain fixed.
+        for data in (self.left_data, self.right_data):
+            data.kp = self.p_gain
+            data.v_min = -6.0
+            data.v_max = 6.0
+
+        self.gain_type = None
 
     def write_line(self, text):
         self.vcp.write((text + "\r\n").encode())
@@ -47,16 +57,16 @@ class TaskUser:
             "| h/H | Print help menu                                        |"
         )
         self.write_line(
-            "| v/V | Enter a velocity (rad/s):                              |"
+            "| v/V | Enter a velocity (rad/s)                               |"
         )
         self.write_line(
-            "| k/K | Gain menu:                                             |"
+            "| k/K | Set proportional gain                                  |"
         )
         self.write_line(
-            "| l/L | Run step-response sequence on left motor               |"
+            "| l/L | Run step-response test on left motor                   |"
         )
         self.write_line(
-            "| r/R | Run step-response sequence on right motor              |"
+            "| r/R | Run step-response test on right motor                  |"
         )
         self.write_line(
             "| e/E | Exit program                                           |"
@@ -68,22 +78,23 @@ class TaskUser:
 
     def taskuser_gen_fcn(self):
         while True:
+
             if self.state == self.S_INIT:
                 self.print_help()
                 self.write_line(self.message)
                 self.state = self.S_WAIT
 
             elif self.state == self.S_WAIT:
-                # read only when one character is available
+                # Read only when input is available.
                 if self.vcp.any():
                     char_in = self.vcp.read(1)
+
                     if char_in is not None:
                         try:
                             command = char_in.decode()
                         except AttributeError:
                             command = chr(char_in[0])
 
-                        # ignore enter if the terminal sent a newline
                         if command in ("\r", "\n"):
                             yield self.state
                             continue
@@ -95,21 +106,21 @@ class TaskUser:
                             self.write_line(self.message)
 
                         elif command in ("l", "L"):
-                            if (not self.left_data.busy and
-                                    not self.left_data.ready and
-                                    not self.right_data.busy and
-                                    not self.right_data.ready):
-
+                            if (
+                                not self.left_data.busy
+                                and not self.left_data.ready
+                                and not self.right_data.busy
+                                and not self.right_data.ready
+                            ):
                                 self.left_data.cycle = self.vel
-
                                 self.active_data = self.left_data
                                 self.active_name = "LEFT"
                                 self.output_started = False
                                 self.active_data.request = True
+
                                 self.write_line(
                                     "Starting LEFT motor step-response."
                                 )
-
                                 self.state = self.S_WAIT_RESULT
                             else:
                                 self.write_line(
@@ -118,17 +129,18 @@ class TaskUser:
                                 )
 
                         elif command in ("r", "R"):
-                            if (not self.left_data.busy and
-                                    not self.left_data.ready and
-                                    not self.right_data.busy and
-                                    not self.right_data.ready):
-
+                            if (
+                                not self.left_data.busy
+                                and not self.left_data.ready
+                                and not self.right_data.busy
+                                and not self.right_data.ready
+                            ):
                                 self.right_data.cycle = self.vel
-
                                 self.active_data = self.right_data
                                 self.active_name = "RIGHT"
                                 self.output_started = False
                                 self.active_data.request = True
+
                                 self.write_line(
                                     "Starting RIGHT motor step-response."
                                 )
@@ -141,14 +153,13 @@ class TaskUser:
 
                         elif command in ("v", "V"):
                             self.multi_char.reset()
-
                             self.write_line("Enter a velocity (rad/s):")
                             self.state = self.S_VEL
 
                         elif command in ("k", "K"):
-                            self.write_line("Enter p/P for proportional and i/I for integral:")
-
-                            self.multi_char.reset()
+                            self.write_line(
+                                "Enter p/P for proportional gain:"
+                            )
                             self.state = self.S_GAIN
 
                         elif command in ("e", "E"):
@@ -158,68 +169,108 @@ class TaskUser:
 
                         else:
                             self.write_line(
-                                "Invalid command. Enter h, l, r, d, or e."
+                                "Invalid command. Enter h, v, k, l, r, or e."
                             )
 
             elif self.state == self.S_GAIN:
-                if command in ("p", "P"):
-                    self.write_line("Enter proportional gain:")
-                    if self.multi_char.update():
-                        if self.multi_char.was_changed():
-                            self.p_gain = self.multi_char.get_value()
+                # Wait cooperatively for the gain type.
+                if self.vcp.any():
+                    char_in = self.vcp.read(1)
 
-                elif command in ("i", "I"):
-                    self.write_line("Enter integral gain:")
-                    if self.multi_char.update():
-                        if self.multi_char.was_changed():
-                            self.i_gain = self.multi_char.get_value()
+                    if char_in is not None:
+                        try:
+                            command = char_in.decode()
+                        except AttributeError:
+                            command = chr(char_in[0])
 
-                self.state = self.S_WAIT
+                        if command in ("\r", "\n"):
+                            pass
+                        elif command in ("p", "P"):
+                            self.gain_type = "p"
+                            self.multi_char.reset()
+                            self.write_line("Enter proportional gain:")
+                            self.state = self.S_KP_VALUE
+                        elif command in ("i", "I"):
+                            self.write_line(
+                                "Integral control is not implemented."
+                            )
+                            self.state = self.S_WAIT
+                        else:
+                            self.write_line("Enter p for proportional gain.")
 
-            # TODO: finish velocity state/communicaiton
+            elif self.state == self.S_KP_VALUE:
+                # Nonblocking numeric input.
+                if self.multi_char.update():
+                    if self.multi_char.was_changed():
+                        self.p_gain = self.multi_char.get_value()
+
+                        for data in (self.left_data, self.right_data):
+                            data.kp = self.p_gain
+
+                        self.write_line(
+                            "Kp set to {}".format(self.p_gain)
+                        )
+                        self.write_line(self.message)
+                        self.state = self.S_WAIT
+
             elif self.state == self.S_VEL:
-
+                # Nonblocking numeric input.
                 if self.multi_char.update():
                     if self.multi_char.was_changed():
                         self.vel = self.multi_char.get_value()
-
-                    self.write_line(self.message)
-                    self.state = self.S_WAIT
+                        self.write_line(
+                            "Velocity set to {}".format(self.vel)
+                        )
+                        self.write_line(self.message)
+                        self.state = self.S_WAIT
 
             elif self.state == self.S_WAIT_RESULT:
                 if self.active_data.ready:
                     self.print_index = 0
+
                     if not self.output_started:
                         self.write_line("")
                         self.write_line(
-                            "# {} MOTOR STEP RESPONSE".format(self.active_name)
+                            "# {} MOTOR STEP RESPONSE".format(
+                                self.active_name
+                            )
                         )
                         self.write_line(
                             "command_pct,time_us,position_ticks,"
                             "velocity_ticks_per_s"
                         )
                         self.output_started = True
+
                     self.state = self.S_PRINT
-                elif (not self.active_data.busy and
-                      not self.active_data.request):
+
+                elif (
+                    not self.active_data.busy
+                    and not self.active_data.request
+                ):
                     self.write_line(
-                        "# {} MOTOR TEST COMPLETE".format(self.active_name)
+                        "# {} MOTOR TEST COMPLETE".format(
+                            self.active_name
+                        )
                     )
                     self.write_line(self.message)
                     self.active_data = None
                     self.state = self.S_WAIT
 
             elif self.state == self.S_PRINT:
-                # send one csv row per dispatch
+                # Send one CSV row per dispatch to preserve cooperation.
                 if self.print_index < self.active_data.count:
                     index = self.print_index
-                    self.write_line("{},{},{},{}".format(
-                        self.active_data.effort,
-                        self.active_data.time_us[index],
-                        self.active_data.position[index],
-                        self.active_data.velocity[index]
-                    ))
+
+                    self.write_line(
+                        "{},{},{},{}".format(
+                            self.active_data.effort,
+                            self.active_data.time_us[index],
+                            self.active_data.position[index],
+                            self.active_data.velocity[index],
+                        )
+                    )
                     self.print_index += 1
+
                 else:
                     self.active_data.clear()
                     self.active_data.ready = False
