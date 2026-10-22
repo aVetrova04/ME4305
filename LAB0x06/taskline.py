@@ -56,12 +56,12 @@ class TaskLine:
                         )
 
                         # Positive correction: turn left.
-                        left_request = self.base_speed - correction
-                        right_request = self.base_speed + correction
+                        left_request = -self.base_speed + correction
+                        right_request = -self.base_speed - correction
 
                         # Avoid reversing either wheel during line following.
-                        left_request = max(0.0, left_request)
-                        right_request = max(0.0, right_request)
+                        left_request = min(0.0, left_request)
+                        right_request = min(0.0, right_request)
 
                         self.left_data.velocity_setpoint = left_request
                         self.right_data.velocity_setpoint = right_request
