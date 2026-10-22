@@ -43,8 +43,8 @@ def main():
 
     # TODO: Replace with the eight verified ADC-capable pins.
     SENSOR_PINS = [
-        Pin.cpu.X, Pin.cpu.X, Pin.cpu.X, Pin.cpu.X,
-        Pin.cpu.X, Pin.cpu.X, Pin.cpu.X, Pin.cpu.X,
+        Pin.cpu.PC0, Pin.cpu.PC1, Pin.cpu.PC2, Pin.cpu.PC3,
+        Pin.cpu.PA4, Pin.cpu.PC4, Pin.cpu.PB0, Pin.cpu.PB1
     ]
 
     MIN_CALIBRATION_SPAN = 10
