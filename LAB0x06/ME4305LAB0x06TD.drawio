@@ -17,7 +17,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="LEFT MOTOR TASK&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Period: 10ms&lt;/div&gt;&lt;div&gt;Priority: 2&lt;/div&gt;" vertex="1">
+        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="LEFT MOTOR TASK&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Period: 10ms&lt;/div&gt;&lt;div&gt;Priority: 5&lt;/div&gt;" vertex="1">
           <mxGeometry height="140" width="140" x="130" y="138" as="geometry" />
         </mxCell>
         <mxCell id="Y_uC5c_1lgtRb6HpRDdh-11" edge="1" parent="1" source="Y_uC5c_1lgtRb6HpRDdh-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" target="Y_uC5c_1lgtRb6HpRDdh-3">
@@ -33,7 +33,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-2" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="RIGHT MOTOR TASK&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Period: 10ms&lt;/div&gt;&lt;div&gt;Priority: 2&lt;/div&gt;" vertex="1">
+        <mxCell id="Y_uC5c_1lgtRb6HpRDdh-2" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="RIGHT MOTOR TASK&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Period: 10ms&lt;/div&gt;&lt;div&gt;Priority: 5&lt;/div&gt;" vertex="1">
           <mxGeometry height="140" width="140" x="130" y="295" as="geometry" />
         </mxCell>
         <mxCell id="Y_uC5c_1lgtRb6HpRDdh-3" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="USER TASK&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Period: 0ms&lt;/div&gt;&lt;div&gt;Priority: 1&lt;/div&gt;" vertex="1">
@@ -62,6 +62,30 @@
           <mxGeometry relative="1" x="0.1814" y="2" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="YGblKcJS3rLIRSNWvoch-4" edge="1" parent="1" source="YGblKcJS3rLIRSNWvoch-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;defaultLabelBackgroundColor=page;" target="Y_uC5c_1lgtRb6HpRDdh-1">
+          <mxGeometry relative="1" x="0.2203" as="geometry">
+            <Array as="points">
+              <mxPoint x="60" y="522" />
+              <mxPoint x="60" y="208" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="YGblKcJS3rLIRSNWvoch-8" edge="1" parent="1" source="YGblKcJS3rLIRSNWvoch-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;defaultLabelBackgroundColor=page;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" target="Y_uC5c_1lgtRb6HpRDdh-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="60" y="522" />
+              <mxPoint x="60" y="365" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="YGblKcJS3rLIRSNWvoch-9" connectable="0" parent="YGblKcJS3rLIRSNWvoch-8" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=1;defaultLabelBackgroundColor=page;" value="centroid &amp;lt;float&amp;gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.0128" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="YGblKcJS3rLIRSNWvoch-1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="LINE TASK&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Period: 20ms&lt;/div&gt;&lt;div&gt;Priority: 2&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="140" x="130" y="452" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
