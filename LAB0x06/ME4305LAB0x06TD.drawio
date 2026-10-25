@@ -79,7 +79,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="YGblKcJS3rLIRSNWvoch-9" connectable="0" parent="YGblKcJS3rLIRSNWvoch-8" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=1;defaultLabelBackgroundColor=page;" value="centroid &amp;lt;float&amp;gt;" vertex="1">
+        <mxCell id="YGblKcJS3rLIRSNWvoch-9" connectable="0" parent="YGblKcJS3rLIRSNWvoch-8" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=1;defaultLabelBackgroundColor=page;" value="centroid&amp;nbsp;&lt;div&gt;share &amp;lt;float&amp;gt;&lt;/div&gt;" vertex="1">
           <mxGeometry relative="1" x="-0.0128" y="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
