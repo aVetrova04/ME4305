@@ -1,4 +1,5 @@
 from MultiChar import MultiChar
+from line_sensor import CHANNELS
 
 
 class TaskUser:
@@ -12,9 +13,10 @@ class TaskUser:
     S_GAIN = 5
     S_VEL = 6
     S_KP_VALUE = 7
+    S_LINE_PRINT = 8
 
-    def __init__(self, vcp, left_data, right_data, system, line_task):
-        self.message = "Enter command (h, f, v, k, l, r, or e):"
+    def __init__(self, vcp, left_data, right_data, system, line_task, imu_task):
+        self.message = "Enter command (h, f, m, c, s, v, k, l, r, or e):"
         self.vcp = vcp
         self.left_data = left_data
         self.right_data = right_data
@@ -32,8 +34,13 @@ class TaskUser:
         self.i_gain = 0.0
 
         self.line_task = line_task
+        self.imu_task = imu_task
+        self.last_imu_stop_reason = None
+        self.last_imu_state = imu_task.state
         self.kp_line = 0.0
         self.max_correction = 1.0
+        self.line_print_index = 0
+        self.last_line_error = None
 
         # Shared controller settings; voltage limits remain fixed.
         for data in (self.left_data, self.right_data):
@@ -66,6 +73,9 @@ class TaskUser:
         self.write_line(
             "| f/F | Commence line follow                                   |"
         )
+        self.write_line("| c/C | Capture a 30-second line-following run                  |")
+        self.write_line("| m/M | Follow, change lanes, then stop at target bar           |")
+        self.write_line("| s/S | Stop line following                                     |")
         self.write_line(
             "+-----+--------------------------------------------------------+"
         )
@@ -98,8 +108,57 @@ class TaskUser:
                 self.state = self.S_WAIT
 
             elif self.state == self.S_WAIT:
+                if self.line_task.capture_ready:
+                    # The wheels stopped before any dataset is printed.
+                    self.write_line("# LINE FOLLOWING DATA")
+                    self.write_line("# channels={}".format(
+                        ",".join(str(ch) for ch in CHANNELS)))
+                    self.write_line("# sensor_count={}".format(
+                        len(self.line_task.sensor.weights)))
+                    self.write_line("# calibration_file=line_calibration.json")
+                    self.write_line("# adc_reads_per_channel={}".format(
+                        self.line_task.sensor.samples))
+                    self.write_line("# base_speed_rad_s={}".format(
+                        self.line_task.base_speed))
+                    self.write_line("# wheel_kp_v_per_rad_s={}".format(self.p_gain))
+                    self.write_line("# line_kp_rad_s_per_mm={}".format(
+                        self.line_task.kp_line))
+                    self.write_line("# max_correction_rad_s={}".format(
+                        self.line_task.max_correction))
+                    self.write_line("# motor_period_ms=10")
+                    self.write_line("# line_period_ms=20")
+                    self.write_line("# ui_period_ms=20")
+                    self.write_line("# samples={}".format(
+                        self.line_task.capture_count))
+                    self.write_line("# stop_reason={}".format(
+                        self.line_task.capture_reason))
+                    self.write_line("time_ms,centroid_mm")
+                    self.line_print_index = 0
+                    self.state = self.S_LINE_PRINT
+
+                elif self.line_task.error != self.last_line_error:
+                    self.last_line_error = self.line_task.error
+                    if self.last_line_error is not None:
+                        self.write_line("# LINE FOLLOWING STOPPED: " +
+                                        self.last_line_error)
+
+                elif self.imu_task.state != self.last_imu_state:
+                    self.last_imu_state = self.imu_task.state
+                    self.write_line("# MANEUVER {} lateral_m={}".format(
+                        self.imu_task.STATE_NAMES[self.imu_task.state],
+                        round(self.imu_task.y_estimate_m, 3)))
+
+                elif self.imu_task.stop_reason != self.last_imu_stop_reason:
+                    self.last_imu_stop_reason = self.imu_task.stop_reason
+                    if self.last_imu_stop_reason is not None:
+                        self.write_line("# MANEUVER STOPPED: " +
+                                        self.last_imu_stop_reason)
+                        if self.imu_task.error is not None:
+                            self.write_line("# IMU ERROR: " + self.imu_task.error)
+                        self.write_line(self.message)
+
                 # Read only when input is available.
-                if self.vcp.any():
+                elif self.vcp.any():
                     char_in = self.vcp.read(1)
 
                     if char_in is not None:
@@ -120,7 +179,9 @@ class TaskUser:
 
                         elif command in ("l", "L"):
                             if (
-                                not self.left_data.busy
+                                not self.line_task.running
+                                and not self.imu_task.running
+                                and not self.left_data.busy
                                 and not self.left_data.ready
                                 and not self.right_data.busy
                                 and not self.right_data.ready
@@ -143,7 +204,9 @@ class TaskUser:
 
                         elif command in ("r", "R"):
                             if (
-                                not self.left_data.busy
+                                not self.line_task.running
+                                and not self.imu_task.running
+                                and not self.left_data.busy
                                 and not self.left_data.ready
                                 and not self.right_data.busy
                                 and not self.right_data.ready
@@ -177,27 +240,57 @@ class TaskUser:
 
                         elif command in ("e", "E"):
                             self.write_line("Exit requested.")
+                            self.imu_task.stop("exit")
                             self.system.exit_requested = True
                             self.state = self.S_EXIT
 
-                        elif command in ("f", "F"):
-                            if not self.left_data.busy and not self.right_data.busy:
+                        elif command in ("m", "M"):
+                            if self.line_task.running or self.imu_task.running:
+                                self.write_line("A steering task is already running.")
+                            elif self.left_data.busy or self.right_data.busy:
+                                self.write_line("Wait for the motor test to finish.")
+                            elif self.vel <= 0 or self.p_gain <= 0 or self.kp_line <= 0:
+                                self.write_line("Set positive speed, wheel Kp, and line gain first.")
+                            else:
+                                self.imu_task.start(
+                                    self.vel, self.kp_line, self.max_correction
+                                )
+                                self.last_imu_stop_reason = None
+                                self.write_line("Automatic lane change started.")
+
+                        elif command in ("f", "F", "c", "C"):
+                            if self.line_task.running or self.imu_task.running:
+                                self.write_line("Line following is already running.")
+                            elif self.left_data.busy or self.right_data.busy:
+                                self.write_line("Wait for the motor test to finish.")
+                            elif self.vel <= 0 or self.p_gain <= 0 or self.kp_line <= 0:
+                                self.write_line("Set positive wheel speed, wheel Kp, and line gain first.")
+                            else:
+                                capture = command in ("c", "C")
                                 self.line_task.start(
                                     base_speed=self.vel,
                                     kp_line=self.kp_line,
                                     max_correction=self.max_correction,
+                                    capture=capture,
                                 )
-                                self.write_line("Line following requested.")
+                                self.last_line_error = None
+                                if capture:
+                                    self.write_line("Line data capture started.")
+                                else:
+                                    self.write_line("Line following requested.")
 
                         elif command in ("s", "S"):
-                            self.line_task.stop()
+                            if self.imu_task.running:
+                                self.imu_task.stop("operator")
+                            else:
+                                self.line_task.stop()
                             self.left_data.velocity_setpoint = 0.0
                             self.right_data.velocity_setpoint = 0.0
                             self.write_line("Stop requested.")
 
                         else:
                             self.write_line(
-                                "Invalid command. Enter h, v, k, l, r, or e."
+                                "Invalid command. Enter h, f, m, c, s, v, k, l, r, or e."
                             )
 
             elif self.state == self.S_GAIN:
@@ -251,6 +344,24 @@ class TaskUser:
                         )
                         self.write_line(self.message)
                         self.state = self.S_WAIT
+
+            elif self.state == self.S_LINE_PRINT:
+                if self.line_print_index < self.line_task.capture_count:
+                    index = self.line_print_index
+                    centroid = self.line_task.centroid_log[index]
+                    field = "" if centroid == self.line_task.NO_LINE else str(centroid)
+                    self.write_line("{},{}".format(
+                        self.line_task.time_ms[index], field))
+                    self.line_print_index += 1
+                else:
+                    if self.line_task.capture_reason == "complete":
+                        self.write_line("# LINE DATA COMPLETE")
+                    else:
+                        self.write_line("# LINE DATA ABORTED: " +
+                                        self.line_task.capture_reason)
+                    self.line_task.capture_ready = False
+                    self.write_line(self.message)
+                    self.state = self.S_WAIT
 
             elif self.state == self.S_WAIT_RESULT:
                 if self.active_data.ready:

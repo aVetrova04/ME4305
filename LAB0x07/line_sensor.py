@@ -2,11 +2,15 @@ from pyb import ADC
 
 
 # Printed QTR sensor numbers, not MCU pin names or ADC peripheral numbers.
-CHANNELS = [1, 2, 3, 4, 5, 6, 7, 8]
+CHANNELS = [3, 4, 5, 6, 7, 8, 9, 10]
 
 # Positive is Romi's left; negative is Romi's right.
 # Channel 7 is the center of the complete 13-channel array.
-SENSOR_POSITIONS_MM = [24, 20, 16, 12, 8, 4, 0, -4]
+SENSOR_POSITIONS_MM = [16, 12, 8, 4, 0, -4, -8, -12]
+
+# A small positive reading on bare white is normal ADC noise. Require at
+# least half the weight of one fully black sensor before following a line.
+MIN_TOTAL_LINE_WEIGHT = 0.1
 
 
 class LineSensor:
@@ -68,7 +72,7 @@ class LineSensor:
 
         self.total_weight = total_weight
 
-        if total_weight <= 1e-9:
+        if total_weight < MIN_TOTAL_LINE_WEIGHT:
             self.centroid_mm = None
             return None
 

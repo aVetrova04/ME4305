@@ -29,6 +29,8 @@ class MotorData:
 
         # Requested wheel velocity, in rad/s.
         self.velocity_setpoint = 0.0
+        # Current encoder-derived wheel velocity, in rad/s.
+        self.measured_speed_rad_s = 0.0
 
         self.count = 0
         self.effort = 0
@@ -79,6 +81,7 @@ class TaskMotor:
         self.trial_start_us = 0
         self.next_sample_us = 0
         self.next_trial_us = 0
+        self.closed_loop_enabled = False
 
     def taskmotor_gen_fcn(self):
         """Generator implementing the nonblocking motor state machine."""
@@ -91,7 +94,9 @@ class TaskMotor:
             if self.state == self.S_INIT:
                 self.motor.set_effort(0)
                 self.motor.disable()
+                self.closed_loop_enabled = False
                 self.encoder.zero()
+                self.shared.measured_speed_rad_s = 0.0
 
                 self.shared.request = False
                 self.shared.busy = False
@@ -105,6 +110,9 @@ class TaskMotor:
             # ---------------------------------------------------------
             elif self.state == self.S_WAIT:
                 if self.shared.request:
+                    self.motor.set_effort(0)
+                    self.motor.disable()
+                    self.closed_loop_enabled = False
                     self.shared.request = False
                     self.shared.busy = True
                     self.shared.ready = False
@@ -114,6 +122,39 @@ class TaskMotor:
                     self.efforts = [self.shared.cycle]
 
                     self.state = self.S_START_TRIAL
+
+                else:
+                    # TaskLine supplies wheel speeds in rad/s every 20 ms.
+                    # This motor task reads each request every 10 ms.
+                    self.encoder.update()
+                    self.shared.measured_speed_rad_s = (
+                        self.encoder.get_velocity()
+                        * 2 * math.pi / TICKS_PER_WHEEL_REVOLUTION
+                    )
+                    requested = self.shared.velocity_setpoint
+
+                    if requested == 0:
+                        if self.closed_loop_enabled:
+                            self.motor.set_effort(0)
+                            self.motor.disable()
+                            self.closed_loop_enabled = False
+                        self.controller.reset()
+                    else:
+                        self.controller.set_kp(self.shared.kp)
+                        self.controller.set_lim(
+                            self.shared.v_min, self.shared.v_max
+                        )
+                        self.controller.set_vel(requested)
+                        voltage = self.controller.update(
+                            self.shared.measured_speed_rad_s
+                        )
+
+                        if not self.closed_loop_enabled:
+                            self.motor.enable()
+                            self.closed_loop_enabled = True
+                        self.motor.set_effort(
+                            100 * voltage / NOMINAL_BATTERY_VOLTAGE
+                        )
 
             # ---------------------------------------------------------
             # Start the next step-response trial.
@@ -149,12 +190,8 @@ class TaskMotor:
                 now_us = ticks_us()
 
                 if ticks_diff(now_us, self.next_sample_us) >= 0:
-                    self.controller.set_kp(self.shared.kp)
-                    # self.controller.set_lim()
-
-                    velocity_rad_s = self.encoder.get_velocity() / TICKS_PER_RADIAN
-                    self.controller.update(velocity_rad_s)
-
+                    # This older l/r step test applies the requested PWM
+                    # directly; the encoder is measured, not controlled.
                     self.encoder.update()
 
                     elapsed_us = ticks_diff(
@@ -217,6 +254,7 @@ class TaskMotor:
             elif self.state == self.S_FINISH:
                 self.motor.set_effort(0)
                 self.motor.disable()
+                self.closed_loop_enabled = False
 
                 self.shared.busy = False
                 self.shared.ready = False
@@ -236,6 +274,7 @@ class TaskMotor:
 
         self.motor.set_effort(0)
         self.motor.disable()
+        self.closed_loop_enabled = False
 
         self.shared.request = False
         self.shared.busy = False
