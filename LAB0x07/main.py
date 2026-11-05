@@ -109,20 +109,44 @@ def main():
 
     left_data = MotorData()
     right_data = MotorData()
+
     system = SystemData()
 
-    left_task = TaskMotor(left_motor, left_enc, left_data)
-    right_task = TaskMotor(right_motor, right_enc, right_data)
-    user_task = TaskUser(
-        USB_VCP(), left_data, right_data, system
+    # Create independent controllers for each wheel.
+    left_controller = ClosedLoop()
+    right_controller = ClosedLoop()
+
+    # Motor tasks own their respective motor controllers.
+    left_task = TaskMotor(
+        left_motor,
+        left_enc,
+        left_data,
+        left_controller
     )
 
-    # The IMU instance is available for later integration into
-    # TaskLine, e.g. heading_rad() and yaw_rate_rad_s().
+    right_task = TaskMotor(
+        right_motor,
+        right_enc,
+        right_data,
+        right_controller
+    )
+
+    # Line-following task.
     line_task = TaskLine(
-        sensor, left_data, right_data, config={}
+        sensor,
+        left_data,
+        right_data,
+        config={}
     )
 
+    # User interface receives the line task.
+    user_task = TaskUser(
+        USB_VCP(),
+        left_data,
+        right_data,
+        system,
+        line_task
+    )
     # Motor tasks run every 10 ms.
     cotask.task_list.append(cotask.Task(
         left_task.taskmotor_gen_fcn(),
