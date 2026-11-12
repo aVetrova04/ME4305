@@ -1,166 +1,124 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Dictator Task FSM" id="dictator-task-fsm">
-    <mxGraphModel dx="1500" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+    <mxGraphModel dx="3565" dy="1204" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
       <root>
-        <mxCell id="0"/>
-        <mxCell id="1" parent="0"/>
-
-        <!-- STATES -->
-
-        <mxCell id="s0" value="S0: INIT&lt;div&gt;&lt;br&gt;Initialize track sequence&lt;/div&gt;&lt;div&gt;Clear behavior flags&lt;/div&gt;&lt;div&gt;Set motors stopped&lt;/div&gt;&lt;div&gt;Wait for readiness&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="550" y="20" width="220" height="120" as="geometry"/>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="s0" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S0: INIT&lt;div&gt;&lt;br&gt;Initialize track sequence&lt;/div&gt;&lt;div&gt;Clear behavior flags&lt;/div&gt;&lt;div&gt;Set motors stopped&lt;/div&gt;&lt;div&gt;Wait for readiness&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="550" y="20" as="geometry" />
         </mxCell>
-
-        <mxCell id="s1" value="S1: WAIT FOR START&lt;div&gt;&lt;br&gt;Wait for User Task&lt;/div&gt;&lt;div&gt;Check motor and sensor readiness&lt;/div&gt;&lt;div&gt;Maintain zero velocity requests&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="550" y="200" width="220" height="120" as="geometry"/>
+        <mxCell id="s1" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S1: WAIT FOR START&lt;div&gt;&lt;br&gt;Wait for User Task&lt;/div&gt;&lt;div&gt;Check motor and sensor readiness&lt;/div&gt;&lt;div&gt;Maintain zero velocity requests&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="550" y="200" as="geometry" />
         </mxCell>
-
-        <mxCell id="s2" value="S2: CP0 → CP1&lt;div&gt;&lt;br&gt;Line follow&lt;/div&gt;&lt;div&gt;Execute lane change&lt;/div&gt;&lt;div&gt;Resume line following&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="180" y="400" width="220" height="120" as="geometry"/>
+        <mxCell id="s2" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S2: CP0 → CP1&lt;div&gt;&lt;br&gt;Line follow&lt;/div&gt;&lt;div&gt;Execute lane change&lt;/div&gt;&lt;div&gt;Resume line following&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="180" y="400" as="geometry" />
         </mxCell>
-
-        <mxCell id="s3" value="S3: CP1 → CP2&lt;div&gt;&lt;br&gt;Line follow or straight shot&lt;/div&gt;&lt;div&gt;Monitor encoder distance&lt;/div&gt;&lt;div&gt;Check checkpoint detection&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="480" y="400" width="220" height="120" as="geometry"/>
+        <mxCell id="s3" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S3: CP1 → CP2&lt;div&gt;&lt;br&gt;Line follow or straight shot&lt;/div&gt;&lt;div&gt;Monitor encoder distance&lt;/div&gt;&lt;div&gt;Check checkpoint detection&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="480" y="400" as="geometry" />
         </mxCell>
-
-        <mxCell id="s4" value="S4: CP2 → GARAGE&lt;div&gt;&lt;br&gt;Line follow or 90° turn&lt;/div&gt;&lt;div&gt;Straight travel to garage&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="780" y="400" width="220" height="120" as="geometry"/>
+        <mxCell id="s4" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S4: CP2 → GARAGE&lt;div&gt;&lt;br&gt;Line follow or 90° turn&lt;/div&gt;&lt;div&gt;Straight travel to garage&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="780" y="400" as="geometry" />
         </mxCell>
-
-        <mxCell id="s5" value="S5: GARAGE → WALL&lt;div&gt;&lt;br&gt;Straight travel&lt;/div&gt;&lt;div&gt;Monitor wall sensor&lt;/div&gt;&lt;div&gt;Stop at wall detection&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="1080" y="400" width="220" height="120" as="geometry"/>
+        <mxCell id="s5" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S5: GARAGE → WALL&lt;div&gt;&lt;br&gt;Straight travel&lt;/div&gt;&lt;div&gt;Monitor wall sensor&lt;/div&gt;&lt;div&gt;Stop at wall detection&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="1080" y="400" as="geometry" />
         </mxCell>
-
-        <mxCell id="s6" value="S6: WALL → CUP&lt;div&gt;&lt;br&gt;Back up until line detected&lt;/div&gt;&lt;div&gt;Line follow&lt;/div&gt;&lt;div&gt;Approach cup&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="1080" y="620" width="220" height="120" as="geometry"/>
+        <mxCell id="s6" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S6: WALL → CUP&lt;div&gt;&lt;br&gt;Back up until line detected&lt;/div&gt;&lt;div&gt;Line follow&lt;/div&gt;&lt;div&gt;Approach cup&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="1080" y="620" as="geometry" />
         </mxCell>
-
-        <mxCell id="s7" value="S7: CUP → CP3&lt;div&gt;&lt;br&gt;Detect cross line / distance&lt;/div&gt;&lt;div&gt;Turn 90°&lt;/div&gt;&lt;div&gt;Drive 9–10 inches&lt;/div&gt;&lt;div&gt;Reverse to line / distance&lt;/div&gt;&lt;div&gt;Turn and drive 4–5 inches&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="780" y="620" width="250" height="145" as="geometry"/>
+        <mxCell id="s7" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S7: CUP → CP3&lt;div&gt;&lt;br&gt;Detect cross line / distance&lt;/div&gt;&lt;div&gt;Turn 90°&lt;/div&gt;&lt;div&gt;Drive 9–10 inches&lt;/div&gt;&lt;div&gt;Reverse to line / distance&lt;/div&gt;&lt;div&gt;Turn and drive 4–5 inches&lt;/div&gt;" vertex="1">
+          <mxGeometry height="145" width="250" x="780" y="620" as="geometry" />
         </mxCell>
-
-        <mxCell id="s8" value="S8: CP3 → CP4&lt;div&gt;&lt;br&gt;Line following&lt;/div&gt;&lt;div&gt;Monitor checkpoint detection&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="480" y="650" width="220" height="120" as="geometry"/>
+        <mxCell id="s8" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S8: CP3 → CP4&lt;div&gt;&lt;br&gt;Line following&lt;/div&gt;&lt;div&gt;Monitor checkpoint detection&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="480" y="650" as="geometry" />
         </mxCell>
-
-        <mxCell id="s9" value="S9: CP4&lt;div&gt;&lt;br&gt;Follow circular line&lt;/div&gt;&lt;div&gt;Use line sensor feedback&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="180" y="650" width="220" height="120" as="geometry"/>
+        <mxCell id="s9" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S9: CP4&lt;div&gt;&lt;br&gt;Follow circular line&lt;/div&gt;&lt;div&gt;Use line sensor feedback&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="180" y="650" as="geometry" />
         </mxCell>
-
-        <mxCell id="s10" value="S10: CP4 → CP5&lt;div&gt;&lt;br&gt;Straight shot&lt;/div&gt;&lt;div&gt;Switch to line following when detected&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="180" y="850" width="220" height="120" as="geometry"/>
+        <mxCell id="s10" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S10: CP4 → CP5&lt;div&gt;&lt;br&gt;Straight shot&lt;/div&gt;&lt;div&gt;Switch to line following when detected&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="180" y="850" as="geometry" />
         </mxCell>
-
-        <mxCell id="s11" value="S11: CP5 → CP6&lt;div&gt;&lt;br&gt;Line following&lt;/div&gt;&lt;div&gt;Monitor checkpoint&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="480" y="850" width="220" height="120" as="geometry"/>
+        <mxCell id="s11" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S11: CP5 → CP6&lt;div&gt;&lt;br&gt;Line following&lt;/div&gt;&lt;div&gt;Monitor checkpoint&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="480" y="850" as="geometry" />
         </mxCell>
-
-        <mxCell id="s12" value="S12: CP6 → CP7&lt;div&gt;&lt;br&gt;Line follow or straight shot&lt;/div&gt;&lt;div&gt;Monitor encoder distance&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="780" y="850" width="220" height="120" as="geometry"/>
+        <mxCell id="s12" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S12: CP6 → CP7&lt;div&gt;&lt;br&gt;Line follow or straight shot&lt;/div&gt;&lt;div&gt;Monitor encoder distance&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="780" y="850" as="geometry" />
         </mxCell>
-
-        <mxCell id="s13" value="S13: CP7 → CP8&lt;div&gt;&lt;br&gt;Reverse straight travel&lt;/div&gt;&lt;div&gt;Detect CP8&lt;/div&gt;&lt;div&gt;Slow down after checkpoint&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
-          <mxGeometry x="1080" y="850" width="220" height="120" as="geometry"/>
+        <mxCell id="s13" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S13: CP7 → CP8&lt;div&gt;&lt;br&gt;Reverse straight travel&lt;/div&gt;&lt;div&gt;Detect CP8&lt;/div&gt;&lt;div&gt;Slow down after checkpoint&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="1080" y="850" as="geometry" />
         </mxCell>
-
-        <mxCell id="s14" value="S14: COMPLETE&lt;div&gt;&lt;br&gt;Clear behavior request&lt;/div&gt;&lt;div&gt;Command both motors to stop&lt;/div&gt;&lt;div&gt;Set run_complete = True&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-          <mxGeometry x="550" y="1030" width="220" height="120" as="geometry"/>
+        <mxCell id="s14" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S14: COMPLETE&lt;div&gt;&lt;br&gt;Clear behavior request&lt;/div&gt;&lt;div&gt;Command both motors to stop&lt;/div&gt;&lt;div&gt;Set run_complete = True&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="550" y="1030" as="geometry" />
         </mxCell>
-
-        <mxCell id="s15" value="S15: STOP / ERROR&lt;div&gt;&lt;br&gt;Clear all behavior requests&lt;/div&gt;&lt;div&gt;Set both wheel setpoints to zero&lt;/div&gt;&lt;div&gt;Wait for stopped confirmations&lt;/div&gt;&lt;div&gt;Report error / stopped&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="1370" y="620" width="220" height="145" as="geometry"/>
+        <mxCell id="s15" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="S15: STOP / ERROR&lt;div&gt;&lt;br&gt;Clear all behavior requests&lt;/div&gt;&lt;div&gt;Set both wheel setpoints to zero&lt;/div&gt;&lt;div&gt;Wait for stopped confirmations&lt;/div&gt;&lt;div&gt;Report error / stopped&lt;/div&gt;" vertex="1">
+          <mxGeometry height="145" width="220" x="1370" y="620" as="geometry" />
         </mxCell>
-
-        <!-- TRANSITIONS -->
-
-        <mxCell id="e0" value="initialization complete" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s0" target="s1">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="e0" edge="1" parent="1" source="s0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s1" value="initialization complete">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <mxCell id="e1" value="start_flag AND all systems ready" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s1" target="s2">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points"><mxPoint x="400" y="260"/></Array>
-          </mxGeometry>
-        </mxCell>
-
-        <mxCell id="e2" value="CP1 detected / distance threshold reached" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s2" target="s3">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e3" value="CP2 detected" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s3" target="s4">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e4" value="garage reached" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s4" target="s5">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e5" value="wall detected" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s5" target="s6">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e6" value="cup reached / interaction complete" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s6" target="s7">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e7" value="CP3 detected / final distance reached" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s7" target="s8">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e8" value="CP4 detected" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s8" target="s9">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e9" value="circle completed / CP4 exit detected" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s9" target="s10">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e10" value="line reacquired / CP5 reached" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s10" target="s11">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e11" value="CP6 detected" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s11" target="s12">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e12" value="CP7 detected" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s12" target="s13">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e13" value="CP8 passed / final distance reached" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s13" target="s14">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- GLOBAL STOP AND ERROR TRANSITIONS -->
-
-        <mxCell id="e14" value="stop_flag OR error_flag OR timeout OR sensor failure" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s3" target="s15">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e15" value="stop_flag OR error_flag OR timeout OR sensor failure" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s5" target="s15">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e16" value="stop_flag OR error_flag OR timeout OR sensor failure" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s9" target="s15">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <mxCell id="e17" value="stop_flag OR error_flag OR timeout OR sensor failure" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s13" target="s15">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- COMPLETE TO WAIT -->
-
-        <mxCell id="e18" value="motors stopped and completion reported" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s14" target="s1">
+        <mxCell id="e1" edge="1" parent="1" source="s1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s2" value="start_flag AND all systems ready">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="660" y="1170"/>
-              <mxPoint x="80" y="1170"/>
-              <mxPoint x="80" y="260"/>
+              <mxPoint x="400" y="260" />
             </Array>
           </mxGeometry>
         </mxCell>
-
+        <mxCell id="e2" edge="1" parent="1" source="s2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s3" value="CP1 detected / distance threshold reached">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="s3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s4" value="CP2 detected">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="s4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s5" value="garage reached">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="s5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s6" value="wall detected">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="s6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s7" value="cup reached / interaction complete">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="s7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s8" value="CP3 detected / final distance reached">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="s8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s9" value="CP4 detected">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="s9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s10" value="circle completed / CP4 exit detected">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="s10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s11" value="line reacquired / CP5 reached">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="s11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s12" value="CP6 detected">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="s12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s13" value="CP7 detected">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="s13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s14" value="CP8 passed / final distance reached">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="s3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" target="s15" value="stop_flag OR error_flag OR timeout OR sensor failure">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="s5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" target="s15" value="stop_flag OR error_flag OR timeout OR sensor failure">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" edge="1" parent="1" source="s9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" target="s15" value="stop_flag OR error_flag OR timeout OR sensor failure">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" edge="1" parent="1" source="s13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" target="s15" value="stop_flag OR error_flag OR timeout OR sensor failure">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" edge="1" parent="1" source="s14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" target="s1" value="motors stopped and completion reported">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="660" y="1170" />
+              <mxPoint x="80" y="1170" />
+              <mxPoint x="80" y="260" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
