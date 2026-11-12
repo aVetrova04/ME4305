@@ -1,0 +1,107 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Line Task FSM" id="line-task-fsm">
+    <mxGraphModel dx="1300" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageWidth="1100" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- STATES -->
+
+        <mxCell id="s0" value="S0: INIT&lt;div&gt;&lt;br&gt;Initialize line sensor driver&lt;/div&gt;&lt;div&gt;Load black/white calibration values&lt;/div&gt;&lt;div&gt;Initialize line-following gains&lt;/div&gt;&lt;div&gt;Set wheel requests = 0&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="20" width="270" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s1" value="S1: WAIT FOR REQUEST&lt;div&gt;&lt;br&gt;Wait for Dictator line request&lt;/div&gt;&lt;div&gt;Maintain zero wheel requests&lt;/div&gt;&lt;div&gt;Monitor stop/error flags&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="205" width="270" height="125" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s2" value="S2: CALCULATE LINE POSITION&lt;div&gt;&lt;br&gt;Read all 8 reflectance sensors&lt;/div&gt;&lt;div&gt;Normalize readings using calibration&lt;/div&gt;&lt;div&gt;Calculate weighted centroid (mm)&lt;/div&gt;&lt;div&gt;Check total line weight&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="400" width="270" height="135" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s3" value="S3: FOLLOW LINE&lt;div&gt;&lt;br&gt;Calculate line-position error&lt;/div&gt;&lt;div&gt;Calculate steering correction&lt;/div&gt;&lt;div&gt;Calculate left/right velocity requests&lt;/div&gt;&lt;div&gt;Send requests to Motor tasks&lt;/div&gt;&lt;div&gt;Check checkpoint/completion condition&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="620" width="270" height="155" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s4" value="S4: LINE LOST&lt;div&gt;&lt;br&gt;Line weight below threshold&lt;/div&gt;&lt;div&gt;Set wheel requests = 0&lt;/div&gt;&lt;div&gt;Start line-loss timer&lt;/div&gt;&lt;div&gt;Check for line reacquisition&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="740" y="400" width="260" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s5" value="S5: COMPLETE&lt;div&gt;&lt;br&gt;Set both wheel requests = 0&lt;/div&gt;&lt;div&gt;Publish completion event to Dictator&lt;/div&gt;&lt;div&gt;Release behavior ownership&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="740" y="620" width="260" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s6" value="S6: STOP / ERROR&lt;div&gt;&lt;br&gt;Receive stop or line-loss timeout&lt;/div&gt;&lt;div&gt;Set both wheel requests = 0&lt;/div&gt;&lt;div&gt;Publish stop/error event&lt;/div&gt;&lt;div&gt;Wait for reset/new request&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="400" width="260" height="145" as="geometry"/>
+        </mxCell>
+
+        <!-- TRANSITIONS -->
+
+        <mxCell id="e0" value="initialization complete" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s0" target="s1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" value="line_request == True AND no competing behavior active" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s1" target="s2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e2" value="line sensor data valid AND total_weight &gt; threshold" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s2" target="s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e3" value="line position calculated" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s3" target="s2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="250" y="700"/>
+              <mxPoint x="250" y="465"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e4" value="total_weight &lt; threshold" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s2" target="s4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e5" value="line detected again before timeout" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s4" target="s2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="465"/>
+              <mxPoint x="680" y="465"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e6" value="line-loss timeout exceeded" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s4" target="s6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e7" value="checkpoint reached OR segment_complete == True" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s3" target="s5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e8" value="stop_request == True" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s3" target="s6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e9" value="completion acknowledged" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s5" target="s1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="870" y="275"/>
+              <mxPoint x="485" y="275"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e10" value="stop acknowledged / manual reset" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s6" target="s1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1180" y="275"/>
+              <mxPoint x="485" y="275"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

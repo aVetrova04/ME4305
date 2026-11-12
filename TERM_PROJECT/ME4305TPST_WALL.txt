@@ -1,0 +1,121 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Wall Task FSM" id="wall-task-fsm">
+    <mxGraphModel dx="1300" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageWidth="1100" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- STATES -->
+
+        <mxCell id="s0" value="S0: INIT&lt;div&gt;&lt;br&gt;Initialize wall sensor&lt;/div&gt;&lt;div&gt;Initialize timeout variables&lt;/div&gt;&lt;div&gt;Set wheel requests = 0&lt;/div&gt;&lt;div&gt;Initialize reverse speed&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="20" width="270" height="125" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s1" value="S1: WAIT FOR REQUEST&lt;div&gt;&lt;br&gt;Wait for Dictator wall request&lt;/div&gt;&lt;div&gt;Maintain zero wheel requests&lt;/div&gt;&lt;div&gt;Monitor stop/error flags&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="200" width="270" height="125" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s2" value="S2: APPROACH WALL&lt;div&gt;&lt;br&gt;Request forward straight motion&lt;/div&gt;&lt;div&gt;Read wall/bump sensor&lt;/div&gt;&lt;div&gt;Monitor elapsed time and distance&lt;/div&gt;&lt;div&gt;Check stop request&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="400" width="270" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s3" value="S3: WALL DETECTED / STOP&lt;div&gt;&lt;br&gt;Wall sensor indicates contact&lt;/div&gt;&lt;div&gt;Set both wheel requests = 0&lt;/div&gt;&lt;div&gt;Notify Motor tasks to stop&lt;/div&gt;&lt;div&gt;Prepare reverse request&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="350" y="620" width="270" height="135" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s4" value="S4: REVERSE FROM WALL&lt;div&gt;&lt;br&gt;Request reverse straight motion&lt;/div&gt;&lt;div&gt;Read line sensor&lt;/div&gt;&lt;div&gt;Monitor reverse distance&lt;/div&gt;&lt;div&gt;Check line reacquisition&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="740" y="620" width="270" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s5" value="S5: LINE DETECTED / COMPLETE&lt;div&gt;&lt;br&gt;Set both wheel requests = 0&lt;/div&gt;&lt;div&gt;Publish completion event&lt;/div&gt;&lt;div&gt;Notify Dictator to activate Line task&lt;/div&gt;&lt;div&gt;Release behavior ownership&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="740" y="850" width="270" height="135" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s6" value="S6: STOP / ERROR&lt;div&gt;&lt;br&gt;Wall timeout or line-loss timeout&lt;/div&gt;&lt;div&gt;Invalid sensor data&lt;/div&gt;&lt;div&gt;Set both wheel requests = 0&lt;/div&gt;&lt;div&gt;Publish error to Dictator&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="400" width="270" height="145" as="geometry"/>
+        </mxCell>
+
+        <!-- TRANSITIONS -->
+
+        <mxCell id="e0" value="initialization complete" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s0" target="s1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" value="wall_request == True AND no competing behavior active" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s1" target="s2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e2" value="wall_sensor == False AND no timeout" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s2" target="s2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="260" y="470"/>
+              <mxPoint x="260" y="560"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e3" value="wall_sensor == True" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s2" target="s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e4" value="stop confirmed and reverse request issued" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s3" target="s4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e5" value="line not detected AND reverse distance below limit" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s4" target="s4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="680"/>
+              <mxPoint x="680" y="780"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e6" value="line_sensor.update() returns valid centroid" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s4" target="s5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e7" value="wall timeout OR reverse timeout OR reverse distance limit exceeded" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s2" target="s6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="470"/>
+              <mxPoint x="1180" y="470"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e8" value="reverse timeout OR invalid sensor data" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s4" target="s6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1020" y="680"/>
+              <mxPoint x="1180" y="680"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e9" value="stop_request == True" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s2" target="s6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e10" value="completion acknowledged" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s5" target="s1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="875" y="270"/>
+              <mxPoint x="485" y="270"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e11" value="error acknowledged / manual reset" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s6" target="s1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1185" y="270"/>
+              <mxPoint x="485" y="270"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

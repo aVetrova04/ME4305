@@ -1,0 +1,129 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Motor Task FSM" id="motor-task-fsm">
+    <mxGraphModel dx="1300" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageWidth="1100" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- STATES -->
+
+        <mxCell id="s0" value="S0: INIT&lt;div&gt;&lt;br&gt;Initialize MotorDriver&lt;/div&gt;&lt;div&gt;Initialize EncoderDriver&lt;/div&gt;&lt;div&gt;Initialize ClosedLoop controller&lt;/div&gt;&lt;div&gt;Set velocity request = 0&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="20" width="240" height="125" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s1" value="S1: DISABLED / WAIT&lt;div&gt;&lt;br&gt;Motor output = 0% PWM&lt;/div&gt;&lt;div&gt;Motor driver disabled&lt;/div&gt;&lt;div&gt;Continue updating encoder&lt;/div&gt;&lt;div&gt;Wait for enable request&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="200" width="240" height="125" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s2" value="S2: ENABLE&lt;div&gt;&lt;br&gt;Enable MotorDriver&lt;/div&gt;&lt;div&gt;Reset ClosedLoop error state&lt;/div&gt;&lt;div&gt;Initialize velocity request&lt;/div&gt;&lt;div&gt;Set motor ready flag&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="390" width="240" height="125" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s3" value="S3: UPDATE ENCODER&lt;div&gt;&lt;br&gt;Call EncoderDriver.update()&lt;/div&gt;&lt;div&gt;Read encoder velocity (ticks/s)&lt;/div&gt;&lt;div&gt;Convert ticks/s to m/s&lt;/div&gt;&lt;div&gt;Publish measured velocity&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="580" width="240" height="125" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s4" value="S4: VELOCITY CONTROL&lt;div&gt;&lt;br&gt;Receive wheel velocity setpoint&lt;/div&gt;&lt;div&gt;Calculate velocity error&lt;/div&gt;&lt;div&gt;e = v_set - v_measured&lt;/div&gt;&lt;div&gt;Run ClosedLoop.update()&lt;/div&gt;&lt;div&gt;Obtain voltage request&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="770" width="240" height="145" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s5" value="S5: APPLY MOTOR OUTPUT&lt;div&gt;&lt;br&gt;Limit voltage request&lt;/div&gt;&lt;div&gt;Convert voltage to duty cycle&lt;/div&gt;&lt;div&gt;Apply PWM using MotorDriver&lt;/div&gt;&lt;div&gt;Publish motor status&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="770" width="240" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s6" value="S6: STOP&lt;div&gt;&lt;br&gt;Set wheel velocity request = 0&lt;/div&gt;&lt;div&gt;Set PWM = 0%&lt;/div&gt;&lt;div&gt;Reset controller state&lt;/div&gt;&lt;div&gt;Disable motor driver when safe&lt;/div&gt;&lt;div&gt;Publish stopped confirmation&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="750" y="390" width="240" height="145" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s7" value="S7: ERROR&lt;div&gt;&lt;br&gt;Set PWM = 0% immediately&lt;/div&gt;&lt;div&gt;Set velocity request = 0&lt;/div&gt;&lt;div&gt;Disable motor driver&lt;/div&gt;&lt;div&gt;Publish motor error status&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="580" width="230" height="130" as="geometry"/>
+        </mxCell>
+
+        <!-- TRANSITIONS -->
+
+        <mxCell id="e0" value="initialization complete" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s0" target="s1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" value="enable_request == True" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s1" target="s2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e2" value="motor enabled and ready" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s2" target="s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e3" value="encoder update complete" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s3" target="s4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e4" value="velocity controller updated" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s4" target="s5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e5" value="PWM applied; next 10 ms invocation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s5" target="s3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="870" y="980"/>
+              <mxPoint x="300" y="980"/>
+              <mxPoint x="300" y="642"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e6" value="stop_request == True" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s3" target="s6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="642"/>
+              <mxPoint x="680" y="460"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e7" value="stop_request == True" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s4" target="s6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="842"/>
+              <mxPoint x="680" y="460"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e8" value="stop_request == True" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s5" target="s6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e9" value="motors stopped; new enable request" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s6" target="s1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="870" y="300"/>
+              <mxPoint x="500" y="300"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e10" value="invalid encoder measurement OR driver error OR controller fault" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s3" target="s7">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e11" value="invalid setpoint OR control fault" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s4" target="s7">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e12" value="driver fault" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s5" target="s7">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e13" value="fault cleared and manual reset" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s7" target="s1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1165" y="260"/>
+              <mxPoint x="500" y="260"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

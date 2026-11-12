@@ -1,0 +1,112 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Turn Task FSM" id="turn-task-fsm">
+    <mxGraphModel dx="1300" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageWidth="1100" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- STATES -->
+
+        <mxCell id="s0" value="S0: INIT&lt;div&gt;&lt;br&gt;Initialize IMU driver&lt;/div&gt;&lt;div&gt;Initialize turn controller gains&lt;/div&gt;&lt;div&gt;Set wheel requests = 0&lt;/div&gt;&lt;div&gt;Initialize heading variables&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="20" width="270" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s1" value="S1: WAIT FOR REQUEST&lt;div&gt;&lt;br&gt;Wait for Dictator turn request&lt;/div&gt;&lt;div&gt;Wait for requested angle/direction&lt;/div&gt;&lt;div&gt;Maintain zero wheel requests&lt;/div&gt;&lt;div&gt;Monitor stop/error flags&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="205" width="270" height="135" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s2" value="S2: RECORD INITIAL HEADING&lt;div&gt;&lt;br&gt;Read current IMU heading (degrees)&lt;/div&gt;&lt;div&gt;Record initial heading&lt;/div&gt;&lt;div&gt;Calculate target heading&lt;/div&gt;&lt;div&gt;Determine turn direction&lt;/div&gt;&lt;div&gt;Start maneuver timeout&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="410" width="270" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s3" value="S3: EXECUTE TURN&lt;div&gt;&lt;br&gt;Read IMU heading and yaw rate&lt;/div&gt;&lt;div&gt;Calculate wrapped heading error&lt;/div&gt;&lt;div&gt;Calculate turn correction&lt;/div&gt;&lt;div&gt;Generate opposite wheel requests&lt;/div&gt;&lt;div&gt;Send requests to Motor tasks&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="630" width="270" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s4" value="S4: SETTLE / VERIFY&lt;div&gt;&lt;br&gt;Set wheel requests = 0&lt;/div&gt;&lt;div&gt;Check heading error&lt;/div&gt;&lt;div&gt;Check yaw rate&lt;/div&gt;&lt;div&gt;Confirm robot has stopped rotating&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="750" y="630" width="260" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s5" value="S5: COMPLETE&lt;div&gt;&lt;br&gt;Confirm target heading reached&lt;/div&gt;&lt;div&gt;Maintain zero wheel requests&lt;/div&gt;&lt;div&gt;Publish completion to Dictator&lt;/div&gt;&lt;div&gt;Release behavior ownership&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="750" y="850" width="260" height="125" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s6" value="S6: STOP / ERROR&lt;div&gt;&lt;br&gt;Stop request or maneuver timeout&lt;/div&gt;&lt;div&gt;Invalid IMU measurement&lt;/div&gt;&lt;div&gt;Set both wheel requests = 0&lt;/div&gt;&lt;div&gt;Publish error/stop event&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="410" width="270" height="145" as="geometry"/>
+        </mxCell>
+
+        <!-- TRANSITIONS -->
+
+        <mxCell id="e0" value="initialization complete" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s0" target="s1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" value="turn_request == True AND no competing behavior active" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s1" target="s2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e2" value="initial heading recorded AND target calculated" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s2" target="s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e3" value="heading error outside tolerance" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s3" target="s3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="260" y="700"/>
+              <mxPoint x="260" y="800"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e4" value="heading error within tolerance" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s3" target="s4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e5" value="heading error &lt; tolerance AND yaw rate &lt; settling threshold" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s4" target="s5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e6" value="heading error outside tolerance after settling" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s4" target="s3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="700"/>
+              <mxPoint x="680" y="700"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e7" value="stop_request == True" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s3" target="s6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e8" value="timeout OR invalid IMU data OR excessive rotation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="s3" target="s6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="780"/>
+              <mxPoint x="1180" y="780"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e9" value="completion acknowledged" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s5" target="s1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="270"/>
+              <mxPoint x="485" y="270"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e10" value="stop acknowledged / manual reset" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="s6" target="s1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1185" y="270"/>
+              <mxPoint x="485" y="270"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
