@@ -1,6 +1,7 @@
 """Lab 09 observer measurement interface (Step 3, Part 1)."""
 
 from math import pi
+from ulab import numpy as np
 
 
 class Observer:
@@ -30,7 +31,7 @@ def week1_numeric_check(Ao, Bo, Co, Do):
 
     # Use the selected MATLAB matrices. This check does not access hardware
     # or run as part of the motor control loop.
-    from ulab import numpy as np
+  
 
     # State order: velocity (rad/s), displacement (rad), disturbance (rad/s^2).
     state = np.array([[1.0], [0.2], [-0.5]])
