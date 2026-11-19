@@ -1,0 +1,203 @@
+{
+  "build": "lab09-step5-10ms-observer-p",
+  "arguments": {
+    "port": "/dev/cu.usbmodem205D32904E332",
+    "firmware": "/Users/loganribarich/Desktop/4305 Lab0x09/Lab09_Step5/firmware",
+    "motor": "left",
+    "low": 2,
+    "high": 12,
+    "kp_left": 2,
+    "kp_right": 2,
+    "battery": 7.65,
+    "vmin": -6,
+    "vmax": 6,
+    "duration": 1.5,
+    "bench_only": false,
+    "attach": false
+  },
+  "conditions": {
+    "run_type": "step5_observer_feedback",
+    "surface": "lab track surface, clear straight section",
+    "loading": "Romi only; no added weight; connected USB cable with slack",
+    "battery_condition": "meter reading supplied before tests; not monitored while moving",
+    "battery_measured_V": 7.65,
+    "teammates": [
+      "Logan Ribarich",
+      "Arina Vetrova"
+    ],
+    "teammate_confirmations": "startup procedure recorded in Step 1 baseline",
+    "controller_tuning": "observer velocity feedback, original P law and Kp=2 per wheel"
+  },
+  "source_sha256": {
+    "ClosedLoop.py": "fe8e49d50782e58382465ec3758803076c597225cd2596ab53ab37234caacdf5",
+    "EncoderDriver.py": "afea1fdc169b0fdd68d78b3843869c3eab5fabc4fcbbac37e0fb454070234328",
+    "MotorDriver.py": "403a74c0dc24f524bd62b34f22022d4c6c21a77df87a76d1414e305ef937e947",
+    "boot.py": "422b462bbf700ec66cf1c8ef2e59c0df9757daecdb11015ce034bcec6bf7b691",
+    "lab09_build.json": "f7bfb01fecf12ab00aef904368bb49c536b047f6e59385298907975a0211e202",
+    "main.py": "3749471b2f3b12902d2bea428df90681b4e4ea2a076f11a6ff25c5dae47dda64",
+    "observer.py": "4b8f977dd9b5b89ca12f12fb2129bb53e5ddf153607e5a15ca406fffd99e9bb0",
+    "taskbaseline.py": "182fab0538dc95c76f2320ea7174a7b4279608715c8d8009a6b9041b9f221fe5",
+    "taskmotor.py": "5a2d612608e4bd5e5eb610b12bdd26d536d1ce005aa6f83fcc571ac350c2c6c6"
+  },
+  "missing_source_files": [
+    "cotask.py"
+  ],
+  "complete": true,
+  "completed_speeds": [
+    2,
+    12
+  ],
+  "tracking_runs": [
+    {
+      "setpoint_rad_s": 2,
+      "timing_left": {
+        "samples": 200,
+        "max_gap_us": 10910,
+        "mean_gap_us": 9993.543,
+        "max_exec_us": 5515
+      },
+      "timing_right": {
+        "samples": 200,
+        "max_gap_us": 14297,
+        "mean_gap_us": 9996.131,
+        "max_exec_us": 5859
+      },
+      "summary": {
+        "rest_original_peak_rad_s": 0.0,
+        "rest_estimate_peak_rad_s": 0.0,
+        "late_original_mean_rad_s": 1.3701234200000005,
+        "late_estimate_mean_rad_s": 1.4927898199999998,
+        "late_signs_match_setpoint": true
+      },
+      "review_issues": [],
+      "scheduled_gc": {
+        "max_pause_us": 0,
+        "runs": 0
+      },
+      "comparison": {
+        "plot": "step5_vs_step4_left_2rad_s.png",
+        "reference_file": "step4_original_feedback_left_2rad_s.csv",
+        "reference_build": "lab09-step4-10ms-gc1",
+        "step4_original_feedback": {
+          "mean_encoder_rad_s": 1.48367142,
+          "encoder_std_rad_s": 0.33747795188836205,
+          "setpoint_minus_mean_encoder_rad_s": 0.5163285799999999,
+          "mean_voltage_V": 1.0098,
+          "voltage_std_V": 0.6716334044700278,
+          "battery_reference_V": 7.65
+        },
+        "step5_observer_feedback": {
+          "mean_encoder_rad_s": 1.37012342,
+          "encoder_std_rad_s": 0.1920716920431629,
+          "setpoint_minus_mean_encoder_rad_s": 0.6298765799999999,
+          "mean_voltage_V": 0.97614,
+          "voltage_std_V": 0.03918712033308903,
+          "battery_reference_V": 7.65
+        }
+      }
+    },
+    {
+      "setpoint_rad_s": 12,
+      "timing_left": {
+        "samples": 200,
+        "max_gap_us": 14164,
+        "mean_gap_us": 9994.487,
+        "max_exec_us": 5513
+      },
+      "timing_right": {
+        "samples": 200,
+        "max_gap_us": 14197,
+        "mean_gap_us": 9997.08,
+        "max_exec_us": 5854
+      },
+      "summary": {
+        "rest_original_peak_rad_s": 0.0,
+        "rest_estimate_peak_rad_s": 0.0,
+        "late_original_mean_rad_s": 9.580309640000003,
+        "late_estimate_mean_rad_s": 9.878045240000002,
+        "late_signs_match_setpoint": true
+      },
+      "review_issues": [],
+      "scheduled_gc": {
+        "max_pause_us": 0,
+        "runs": 0
+      },
+      "comparison": {
+        "plot": "step5_vs_step4_left_12rad_s.png",
+        "reference_file": "step4_original_feedback_left_12rad_s.csv",
+        "reference_build": "lab09-step4-10ms-gc1",
+        "step4_original_feedback": {
+          "mean_encoder_rad_s": 9.864487019607843,
+          "encoder_std_rad_s": 0.2765630047826558,
+          "setpoint_minus_mean_encoder_rad_s": 2.135512980392157,
+          "mean_voltage_V": 4.242,
+          "voltage_std_V": 0.5506736783250131,
+          "battery_reference_V": 7.65
+        },
+        "step5_observer_feedback": {
+          "mean_encoder_rad_s": 9.58030964,
+          "encoder_std_rad_s": 0.22545407743420912,
+          "setpoint_minus_mean_encoder_rad_s": 2.4196903600000006,
+          "mean_voltage_V": 4.19985,
+          "voltage_std_V": 0.10953133113406403,
+          "battery_reference_V": 7.65
+        }
+      }
+    }
+  ],
+  "step4_reference_sha256": {
+    "step4_original_feedback_left_2rad_s.csv": "c98fdc0b109a0c0971aebcce81c90a1cb028ceada7c243b88d05aa138977f671",
+    "step4_original_feedback_left_12rad_s.csv": "4b300d6a027dd5de9a93d13d78f4d0ccf94143f8bddb76e2d2dc4332e5078d07"
+  },
+  "startup_check": "operator-confirmed",
+  "raised_checks": [
+    {
+      "motor": "left",
+      "speed": 5,
+      "result": "operator and both signals confirmed",
+      "original_mean_rad_s": 3.889506257142856,
+      "estimated_mean_rad_s": 4.1442055714285715
+    },
+    {
+      "motor": "left",
+      "speed": -5,
+      "result": "operator and both signals confirmed",
+      "original_mean_rad_s": -3.876923285714286,
+      "estimated_mean_rad_s": -4.138864942857143
+    },
+    {
+      "motor": "right",
+      "speed": 5,
+      "result": "operator and both signals confirmed",
+      "original_mean_rad_s": 3.7951202857142836,
+      "estimated_mean_rad_s": 4.100274628571428
+    },
+    {
+      "motor": "right",
+      "speed": -5,
+      "result": "operator and both signals confirmed",
+      "original_mean_rad_s": -3.778175771428572,
+      "estimated_mean_rad_s": -4.0983047428571435
+    }
+  ],
+  "operator_stop_check": "operator-confirmed",
+  "combined_timing": {
+    "left": {
+      "samples": 201,
+      "max_gap_us": 10940,
+      "mean_gap_us": 9992.045,
+      "max_exec_us": 5539
+    },
+    "right": {
+      "samples": 200,
+      "max_gap_us": 14322,
+      "mean_gap_us": 9994.633,
+      "max_exec_us": 5890
+    }
+  },
+  "scheduled_gc": {
+    "max_pause_us": 0,
+    "runs": 0
+  },
+  "bench_timing_issues": []
+}

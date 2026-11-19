@@ -1,0 +1,137 @@
+{
+  "build": "lab09-step4-10ms-gc1",
+  "arguments": {
+    "port": "/dev/cu.usbmodem205D32904E332",
+    "firmware": "/Users/loganribarich/Desktop/4305 Lab0x09/Lab09_Step4_Ready/firmware",
+    "motor": "left",
+    "low": 2,
+    "high": 12,
+    "kp_left": 2,
+    "kp_right": 2,
+    "battery": 7.65,
+    "vmin": -6,
+    "vmax": 6,
+    "duration": 1.5,
+    "bench_only": false,
+    "attach": false
+  },
+  "conditions": {
+    "run_type": "step4_original_feedback",
+    "surface": "lab track surface, clear straight section",
+    "loading": "Romi only; no added weight; connected USB cable with slack",
+    "battery_condition": "meter reading supplied before tests; not monitored while moving",
+    "battery_measured_V": 7.65,
+    "teammates": [
+      "Logan Ribarich",
+      "Arina Vetrova"
+    ],
+    "teammate_confirmations": "startup procedure recorded in Step 1 baseline",
+    "controller_tuning": "original P feedback, Kp=2 per wheel; observers monitor only"
+  },
+  "source_sha256": {
+    "ClosedLoop.py": "fe8e49d50782e58382465ec3758803076c597225cd2596ab53ab37234caacdf5",
+    "EncoderDriver.py": "afea1fdc169b0fdd68d78b3843869c3eab5fabc4fcbbac37e0fb454070234328",
+    "MotorDriver.py": "403a74c0dc24f524bd62b34f22022d4c6c21a77df87a76d1414e305ef937e947",
+    "boot.py": "422b462bbf700ec66cf1c8ef2e59c0df9757daecdb11015ce034bcec6bf7b691",
+    "lab09_build.json": "a499d28e08344e609e2cd5664e71e8af4f89a06e0afb942bca8bb91f06df19e9",
+    "main.py": "3749471b2f3b12902d2bea428df90681b4e4ea2a076f11a6ff25c5dae47dda64",
+    "observer.py": "4b8f977dd9b5b89ca12f12fb2129bb53e5ddf153607e5a15ca406fffd99e9bb0",
+    "taskbaseline.py": "250b54d2a791a5a2c7722675fd9e0cb2206bfe25080692aceae75e3469afc1c8",
+    "taskmotor.py": "d3648e7bd3a0828e7d97c11214f9a1a73ecf35c2008436d93b03811dd7d1f9d4"
+  },
+  "missing_source_files": [
+    "cotask.py"
+  ],
+  "complete": true,
+  "completed_speeds": [
+    2,
+    12
+  ],
+  "tracking_runs": [
+    {
+      "setpoint_rad_s": 2,
+      "timing_left": {
+        "samples": 201,
+        "max_gap_us": 10983,
+        "mean_gap_us": 9993.255,
+        "max_exec_us": 5544
+      },
+      "timing_right": {
+        "samples": 200,
+        "max_gap_us": 14325,
+        "mean_gap_us": 9995.85,
+        "max_exec_us": 5891
+      },
+      "summary": {
+        "rest_original_peak_rad_s": 0.0,
+        "rest_estimate_peak_rad_s": 0.0,
+        "late_original_mean_rad_s": 1.4836714199999996,
+        "late_estimate_mean_rad_s": 1.6223022600000006,
+        "late_signs_match_setpoint": true
+      },
+      "review_issues": [],
+      "scheduled_gc": {
+        "max_pause_us": 0,
+        "runs": 0
+      }
+    },
+    {
+      "setpoint_rad_s": 12,
+      "timing_left": {
+        "samples": 201,
+        "max_gap_us": 10919,
+        "mean_gap_us": 9992.995,
+        "max_exec_us": 5517
+      },
+      "timing_right": {
+        "samples": 200,
+        "max_gap_us": 13934,
+        "mean_gap_us": 9995.593,
+        "max_exec_us": 5859
+      },
+      "summary": {
+        "rest_original_peak_rad_s": 0.0,
+        "rest_estimate_peak_rad_s": 0.0,
+        "late_original_mean_rad_s": 9.864487019607845,
+        "late_estimate_mean_rad_s": 10.15911288235294,
+        "late_signs_match_setpoint": true
+      },
+      "review_issues": [],
+      "scheduled_gc": {
+        "max_pause_us": 0,
+        "runs": 0
+      }
+    }
+  ],
+  "raised_checks": [
+    {
+      "motor": "left",
+      "speed": 5,
+      "result": "operator and both signals confirmed",
+      "original_mean_rad_s": 4.139380771428571,
+      "estimated_mean_rad_s": 4.381162142857143
+    },
+    {
+      "motor": "left",
+      "speed": -5,
+      "result": "operator and both signals confirmed",
+      "original_mean_rad_s": -4.152521228571428,
+      "estimated_mean_rad_s": -4.384252828571428
+    },
+    {
+      "motor": "right",
+      "speed": 5,
+      "result": "operator and both signals confirmed",
+      "original_mean_rad_s": 4.1272914571428565,
+      "estimated_mean_rad_s": 4.394699028571429
+    },
+    {
+      "motor": "right",
+      "speed": -5,
+      "result": "operator and both signals confirmed",
+      "original_mean_rad_s": -4.11293722857143,
+      "estimated_mean_rad_s": -4.393006857142858
+    }
+  ],
+  "operator_stop_check": "operator-confirmed"
+}

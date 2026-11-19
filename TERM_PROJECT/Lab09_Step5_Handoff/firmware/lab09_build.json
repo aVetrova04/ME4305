@@ -1,0 +1,16 @@
+{
+  "build": "lab09-step5-10ms-observer-p",
+  "step4_parent": "lab09-step4-10ms-gc1",
+  "base_checkpoint": "83227f61eaa85767",
+  "controller": "P",
+  "controller_feedback": "observer",
+  "motor_period_ms": 10,
+  "controller_period_ms": 10,
+  "observer_design": "A",
+  "observer_period_ms": 10,
+  "counts_per_rev": 1440,
+  "battery_reference_V": 7.65,
+  "wheel_voltage_limits_V": [-6.0, 6.0],
+  "baseline_Kp_per_wheel": 2.0,
+  "timing_change": "proactive garbage collection in guarded gaps after both motor updates"
+}
