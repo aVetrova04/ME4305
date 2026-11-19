@@ -4,7 +4,7 @@ import math
 from ClosedLoop import ClosedLoop
 
 TICKS_PER_WHEEL_REVOLUTION = 1440
-NOMINAL_BATTERY_VOLTAGE = 7.2
+MOTOR_PERIOD_MS = 10
 
 class MotorData:
     """Shared request, status, and command data for one motor."""
@@ -31,6 +31,10 @@ class MotorData:
         self.velocity_setpoint = 0.0
         # Current encoder-derived wheel velocity, in rad/s.
         self.measured_speed_rad_s = 0.0
+        self.estimated_speed_rad_s = 0.0
+        self.limited_voltage_V = 0.0
+        self.capture_callback = None
+        self.run_deadline_us = None
 
         self.count = 0
         self.effort = 0
@@ -58,11 +62,12 @@ class TaskMotor:
     S_PAUSE = 5
     S_FINISH = 6
 
-    def __init__(self, motor, encoder, shared, controller):
+    def __init__(self, motor, encoder, shared, controller, observer):
         self.motor = motor
         self.encoder = encoder
         self.shared = shared
-        self.controller = ClosedLoop()
+        self.controller = controller if controller is not None else ClosedLoop()
+        self.observer = observer
         self.controller.set_kp(self.shared.kp)
         self.controller.set_lim(self.shared.v_min, self.shared.v_max)
 
@@ -82,6 +87,104 @@ class TaskMotor:
         self.next_sample_us = 0
         self.next_trial_us = 0
         self.closed_loop_enabled = False
+        self.timing_active = False
+        self.previous_start_us = None
+        self.timing_samples = 0
+        self.total_gap_us = 0
+        self.max_gap_us = 0
+        self.max_exec_us = 0
+
+    def reset_run(self):
+        """Zero the measured and estimated displacement at the same point."""
+
+        self.encoder.zero()
+        self.observer.reset()
+        self.controller.reset()
+        self.shared.measured_speed_rad_s = 0.0
+        self.shared.estimated_speed_rad_s = 0.0
+
+    def start_timing(self):
+        """Start fresh timing measurements for this trial."""
+
+        self.previous_start_us = None
+        self.timing_samples = 0
+        self.total_gap_us = 0
+        self.max_gap_us = 0
+        self.max_exec_us = 0
+        self.timing_active = True
+
+    def record_timing(self, start_us):
+        """Measure sample spacing and work done in the motor task."""
+
+        execution_us = ticks_diff(ticks_us(), start_us)
+        self.max_exec_us = max(self.max_exec_us, execution_us)
+        if self.previous_start_us is not None:
+            gap_us = ticks_diff(start_us, self.previous_start_us)
+            self.total_gap_us += gap_us
+            self.max_gap_us = max(self.max_gap_us, gap_us)
+        self.previous_start_us = start_us
+        self.timing_samples += 1
+
+    def timing_summary(self):
+        """Report timing outside of the repeated control calculation."""
+
+        mean_gap_us = 0
+        if self.timing_samples > 1:
+            mean_gap_us = self.total_gap_us / (self.timing_samples - 1)
+        return {
+            "samples": self.timing_samples,
+            "mean_gap_us": mean_gap_us,
+            "max_gap_us": self.max_gap_us,
+            "max_exec_us": self.max_exec_us,
+        }
+
+    def velocity_control(self):
+        """Use the original feedback and monitor the observer at 10 ms."""
+
+        now_us = ticks_us()
+        deadline = self.shared.run_deadline_us
+        if deadline is not None and ticks_diff(now_us, deadline) >= 0:
+            # Stop even if the user task cannot service the USB link.
+            self.stop()
+            return
+
+        # Update the encoder once. Read the estimate belonging to this tick.
+        self.encoder.update()
+        self.shared.measured_speed_rad_s = (
+            self.encoder.get_velocity() * 2 * math.pi / TICKS_PER_WHEEL_REVOLUTION
+        )
+        displacement_rad = self.observer.get_displacement_rad()
+        self.shared.estimated_speed_rad_s = self.observer.get_velocity_rad_s()
+
+        # Step 3 keeps the existing P controller on the original signal.
+        requested = self.shared.velocity_setpoint
+        if requested == 0:
+            if self.closed_loop_enabled:
+                self.motor.set_effort(0)
+                self.motor.disable()
+                self.closed_loop_enabled = False
+            self.controller.reset()
+            applied_voltage_V = 0.0
+        else:
+            self.controller.set_kp(self.shared.kp)
+            self.controller.set_lim(self.shared.v_min, self.shared.v_max)
+            self.controller.set_vel(requested)
+            voltage_V = self.controller.update(self.shared.measured_speed_rad_s)
+            if not self.closed_loop_enabled:
+                self.motor.enable()
+                self.closed_loop_enabled = True
+            # set_voltage returns the signed voltage represented by the duty
+            # sent to the driver, after clipping and integer PWM rounding.
+            applied_voltage_V = self.motor.set_voltage(voltage_V)
+        self.shared.limited_voltage_V = applied_voltage_V
+
+        # Log the current estimate before updating it for the next tick.
+        if self.shared.capture_callback is not None:
+            self.shared.capture_callback(now_us, self.shared)
+        self.observer.update(applied_voltage_V, displacement_rad)
+
+        if self.timing_active:
+            self.record_timing(now_us)
 
     def taskmotor_gen_fcn(self):
         """Generator implementing the nonblocking motor state machine."""
@@ -95,8 +198,7 @@ class TaskMotor:
                 self.motor.set_effort(0)
                 self.motor.disable()
                 self.closed_loop_enabled = False
-                self.encoder.zero()
-                self.shared.measured_speed_rad_s = 0.0
+                self.reset_run()
 
                 self.shared.request = False
                 self.shared.busy = False
@@ -124,37 +226,7 @@ class TaskMotor:
                     self.state = self.S_START_TRIAL
 
                 else:
-                    # TaskLine supplies wheel speeds in rad/s every 20 ms.
-                    # This motor task reads each request every 10 ms.
-                    self.encoder.update()
-                    self.shared.measured_speed_rad_s = (
-                        self.encoder.get_velocity()
-                        * 2 * math.pi / TICKS_PER_WHEEL_REVOLUTION
-                    )
-                    requested = self.shared.velocity_setpoint
-
-                    if requested == 0:
-                        if self.closed_loop_enabled:
-                            self.motor.set_effort(0)
-                            self.motor.disable()
-                            self.closed_loop_enabled = False
-                        self.controller.reset()
-                    else:
-                        self.controller.set_kp(self.shared.kp)
-                        self.controller.set_lim(
-                            self.shared.v_min, self.shared.v_max
-                        )
-                        self.controller.set_vel(requested)
-                        voltage = self.controller.update(
-                            self.shared.measured_speed_rad_s
-                        )
-
-                        if not self.closed_loop_enabled:
-                            self.motor.enable()
-                            self.closed_loop_enabled = True
-                        self.motor.set_effort(
-                            100 * voltage / NOMINAL_BATTERY_VOLTAGE
-                        )
+                    self.velocity_control()
 
             # ---------------------------------------------------------
             # Start the next step-response trial.
@@ -261,6 +333,8 @@ class TaskMotor:
                 self.shared.request = False
                 self.shared.clear()
 
+                # Open-loop diagnostics use a separate encoder reference.
+                self.reset_run()
                 self.state = self.S_WAIT
 
             else:
@@ -275,6 +349,11 @@ class TaskMotor:
         self.motor.set_effort(0)
         self.motor.disable()
         self.closed_loop_enabled = False
+        self.timing_active = False
+        self.shared.velocity_setpoint = 0.0
+        self.shared.limited_voltage_V = 0.0
+        self.shared.capture_callback = None
+        self.shared.run_deadline_us = None
 
         self.shared.request = False
         self.shared.busy = False

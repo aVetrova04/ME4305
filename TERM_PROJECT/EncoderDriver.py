@@ -5,8 +5,12 @@ from time import ticks_us, ticks_diff
 class EncoderDriver:
     '''A quadrature encoder decoding interface encapsulated in a Python class.'''
 
-    def __init__(self, tim, chA_pin, chB_pin):
+    def __init__(self, tim, chA_pin, chB_pin, polarity=-1):
         '''Initializes an Encoder object and its hardware timer.'''
+
+        if polarity not in (-1, 1):
+            raise ValueError("Encoder polarity must be -1 or 1")
+        self.polarity = polarity
 
         # Configure a 16-bit timer for quadrature decoding.
         self.timer = Timer(tim, period=0xFFFF, prescaler=0)
@@ -38,6 +42,9 @@ class EncoderDriver:
             self.delta -= 65536
         elif self.delta < -32768:
             self.delta += 65536
+
+        # current wiring: raw counts run opposite to commanded motor effort
+        self.delta *= self.polarity
 
         # Accumulate the corrected signed change.
         self.position += self.delta
